@@ -1,0 +1,140 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.mantine-Modal-root,
+.mantine-Modal-content {
+  border: 2px solid rgba(245, 47, 0, 0.2);
+  color: white;
+  background: rgba(60, 60, 60, 1) !important;
+  border-radius: 20px;
+  
+}
+.mantine-Modal-header {
+  background: none !important;
+  padding: 20px;
+}
+.mantine-Modal-title {
+  font-size: 24px;
+}
+.textarea-class {
+  @apply w-full;
+  height: 255px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  background: rgba(96, 96, 96, 0);
+  outline: none;
+  padding: 10px;
+}
+.mantine-Menu-dropdown {
+  @apply z-50;
+  position: absolute !important;
+  top: 53px !important;
+  left: 20px !important;
+}
+.paginationIconPrevious,
+.paginationIconNext,
+.paginationIconLastPage {
+  color: white !important;
+}
+.rdt_Pagination {
+  color: white !important;
+}
+
+@layer components {
+  .auth-input {
+    @apply flex items-center w-full;
+    height: 46px;
+    border-radius: 16.958px;
+    border: 1.413px solid rgba(102, 102, 102, 0.35);
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(15px);
+  }
+
+  .cp-admin-container {
+    @apply container px-2 py-2 mx-auto bg-[#0C0C0C] text-[#fff];
+  }
+  .signin-container {
+    @apply w-[100%] lg:w-[550px] h-[630px] mx-2 rounded-lg p-8 bg-dsh-bg;
+    /* border: 1px solid rgb(91, 56, 23); */
+    border-radius: 28px;
+    /* background: rgba(15, 9, 12, 0.56); */
+    /* box-shadow: 0px 64px 64px -32px rgba(41, 15, 0, 0.56);
+    backdrop-filter: blur(80px); */
+  }
+  .welcome-admin-dsh {
+    border-radius: 20px;
+    border: 1px solid rgba(245, 47, 0, 0.2);
+    background: rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(20px);
+  }
+
+  .select-input {
+    @apply text-sm text-[#fff] py-2 px-2;
+    border-radius: 50px;
+    background: rgba(182, 176, 176, 0.09);
+  }
+
+  .active-tab {
+    @apply flex flex-col items-center justify-center px-1 font-semibold;
+    border-bottom: 4px solid #ff7a00;
+  }
+  .comment-active-tab {
+    @apply px-10 py-1 rounded-full;
+
+    border: 0.5px solid rgba(245, 47, 0, 0.26);
+    background: rgba(217, 217, 217, 0.21);
+  }
+
+  .table-container {
+    @apply p-6 rounded-lg;
+    border-radius: 20px;
+    border: 1px solid rgba(245, 47, 0, 0.2);
+    background: rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(20px);
+  }
+  .comment-table-container {
+    @apply p-2 rounded-lg;
+    border-radius: 20px;
+    border: 1px solid rgba(245, 47, 0, 0.2);
+    background: rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(20px);
+  }
+  /* CSS for modal */
+  .modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .modal-content {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+  }
+
+  .modal-close-button {
+    margin-top: 10px;
+    cursor: pointer;
+  }
+
+  .container {
+    position: relative;
+  }
+
+  .progress-bar {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 50%;
+    height: 4px;
+    background-color: #f52f00;
+  }
+}
