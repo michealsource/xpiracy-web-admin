@@ -151,8 +151,25 @@ const MainVideo = ({allCollectionData, currentTab}) => {
   const dispatch = useDispatch();
 
   const [selected, setSelected] = useState([]);
+  const [search, setsearch] = useState("");
+  const [selectedRaw, setSelectedRaw] = useState([]);
+  const [editingItem, setEditingItem] = useState(null);
 
   const [columnData, setColumnData] = useState([]);
+
+  useEffect(()=>{
+    console.log('reached 0', search)
+    if(search.length == 0){
+      setColumnData(selectedRaw);
+    }else{
+      console.log('reached 1', search)
+      const data = selectedRaw.filter(item => {
+        return ( (item.video_name.toLowerCase()).includes(search.toLowerCase()) || (item.keyword.toLowerCase()).includes(search.toLowerCase()));
+      });
+
+      setColumnData(data);
+    }
+  }, [search, currentTab, allCollectionData])
 
   useEffect(()=>{
     console.log(currentTab)
@@ -166,17 +183,21 @@ const MainVideo = ({allCollectionData, currentTab}) => {
       });
 
       setColumnData(_data);
+      setSelectedRaw(_data);
     }else{
       switch (currentTab) {
         case "interview":
           setColumnData(allCollectionData?.randomExtendedInterview);
+          setSelectedRaw(allCollectionData?.randomExtendedInterview);
           break ;
         case "trailer":
           setColumnData(allCollectionData?.randomTrailer);
+          setSelectedRaw(allCollectionData?.randomTrailer);
           break ;
         case "bts":
         default:
           setColumnData(allCollectionData?.randomBehindTheScene);
+          setSelectedRaw(allCollectionData?.randomBehindTheScene);
           break;
       }
     }
@@ -224,7 +245,32 @@ const MainVideo = ({allCollectionData, currentTab}) => {
     {
       // selector: "iconOne",
       cell: (row) => (
-        <button onClick={toggle} className="text-[#8991A0]">
+        <button onClick={()=> {
+
+          let type = "content";
+            switch (currentTab) {
+              case "video":
+                type = "content";
+                break;
+              case "interview":
+                type = "extended_interview";
+                break;
+              case "trailer":
+                type = "trailers";
+                break;
+                
+              case "bts":
+                type = "behind_the_scene";
+                break;
+            
+              default:
+                type = "content";
+                break;
+            }
+
+            setEditingItem({...row, type: type}); 
+            toggle()
+          }} className="text-[#8991A0]">
           {/* {row.iconOne} */}
           <MdEdit size={20} />
         </button>
@@ -330,6 +376,8 @@ const MainVideo = ({allCollectionData, currentTab}) => {
           icon={<BsSearch size="1rem" />}
           placeholder="Search"
           styles={{ input: inputStyles }}
+          value={search}
+          onChange={(e)=> setsearch(e.target.value)}
         />
       </div>
       {currentTab}
@@ -347,7 +395,7 @@ const MainVideo = ({allCollectionData, currentTab}) => {
           customStyles={customStyles}
         />
       </div>
-      <VideoMetaModal isOpen={isOpen} onClose={toggle} />
+      <VideoMetaModal editingItem={editingItem} isOpen={isOpen} onClose={toggle} />
     </div>
   );
 };

@@ -14,8 +14,8 @@ import * as yup from "yup";
 import axiosClient from "../../api/axios";
 import { getAllCollectionDataAction } from "../../redux/actions/genericAction";
 
-const VideoMetaModal = ({ isOpen, onClose, mediaFile }) => {
-  // console.log(mediaFile, "mediaFile")
+const VideoMetaModal = ({ isOpen, onClose, mediaFile, editingItem = {} }) => {
+  // console.log(editingItem, "editingItem")
   const genericSelector = useSelector((state) => state.genericSlice);
   const dispatch = useDispatch();
 
@@ -25,12 +25,50 @@ const VideoMetaModal = ({ isOpen, onClose, mediaFile }) => {
   const [subtitle, setSubtitle] = useState(null)
   const [coverImageUrl, setCoverImageUrl] = useState(null)
   const [input, setInput] = useState({
-    video_name: "",
+    video_name: editingItem?.video_name || "",
     desc: "",
     placement: 1,
-    keyword: "",
+    keyword: editingItem?.keyword || "",
     collection: 1,
+    type: editingItem?.type || "",
   });
+
+  useEffect(()=>{
+    if(editingItem?.video_name){
+
+      let collection = 1;
+      switch (editingItem?.type) {
+        case "video":
+          collection = 1;
+          break;
+        case "interview":
+          collection = 4;
+          break;
+        case "trailer":
+          collection = 6;
+          break;
+          
+        case "bts":
+          collection = 3;
+          break;
+      
+        default:
+          collection = 2;
+          break;
+      }
+      setInput({
+        video_name: editingItem?.video_name || "",
+        desc: "",
+        placement: 1,
+        keyword: editingItem?.keyword || "",
+        collection: 1 || "",
+        placement: collection || "",
+        type: editingItem?.type || "",
+      });
+
+      setCoverImageUrl(editingItem?.coverImage);
+    }
+  }, [editingItem])
 
   useEffect(()=>{
     return ()=>{
@@ -40,6 +78,7 @@ const VideoMetaModal = ({ isOpen, onClose, mediaFile }) => {
         placement: 1,
         keyword: "",
         collection: 1,
+        type: ""
       });
       setCoverImage(null);
       setCoverImageUrl(null);
@@ -108,7 +147,71 @@ const VideoMetaModal = ({ isOpen, onClose, mediaFile }) => {
     multiple: false,
   });
 
+  const submitForEdit = async ()=>{
+
+    setLoading(true);
+    try {
+      const validationSchema = yup.object({
+        video_name: yup.string().trim().required("video name is required"),
+        keyword: yup.string().trim().required("keyword is required"),
+        placement: yup.string().trim().required("placement is required"),
+        collection: yup.string().trim().required("collection is required"),
+      });
+      await validationSchema.validate(input);
+
+      // if(inputImage == null){
+      //     (new Swal('Oops...', "Thumbnail required", 'error'));
+      //     return ;
+      // }
+
+      
+      // process
+      const fd = new FormData();
+      if (coverImage != null) {
+        fd.append("coverImage", coverImage);
+      }
+      fd.append("id", editingItem?.id);
+      fd.append("video_name", input.video_name);
+      fd.append("keyword", input.keyword);
+      // fd.append("placementId", input.placement);
+      // fd.append("collectionId", input.collection);
+      // fd.append("video", mediaFile);
+      fd.append("type", editingItem?.type);
+
+      if (subtitle != null) {
+        fd.append("subtitle", subtitle);
+      }
+
+      await axiosClient().post("admin/content/modify", fd, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+
+      toast.success(
+        "Updated Successfully, reflecting soon"
+      );
+
+      // dispatch for get new collection
+      dispatch(getAllCollectionDataAction());
+
+      setTimeout(() => {
+        dispatch(getAllCollectionDataAction());
+      }, 2000);
+
+      onClose();
+    } catch (error) {
+      // new Swal("Oops...", error.message, "error");
+      toast.error(error.message)
+    }
+    setLoading(false);
+
+  }
+
   const submitNow = async ()=>{
+
+    if(editingItem?.video_name){
+      submitForEdit();
+      return ;
+    }
     setLoading(true);
     try {
       const validationSchema = yup.object({
@@ -137,6 +240,7 @@ const VideoMetaModal = ({ isOpen, onClose, mediaFile }) => {
       fd.append("placementId", input.placement);
       fd.append("collectionId", input.collection);
       fd.append("video", mediaFile);
+      fd.append("coverImage", coverImage);
 
       if (subtitle != null) {
         fd.append("subtitle", subtitle);
@@ -224,6 +328,7 @@ const VideoMetaModal = ({ isOpen, onClose, mediaFile }) => {
                 
                 <select
                   value={input.placement}
+                  disabled={(editingItem?.id != undefined)}
                   onChange={(v) =>
                     setValue({ ...input, placement: v.target.value })
                   }
@@ -265,7 +370,7 @@ const VideoMetaModal = ({ isOpen, onClose, mediaFile }) => {
                           {( (coverImageUrl) && (<img style={{ height: 70, width: 70 }} src={coverImageUrl} alt="" />))}
                           <div>
                             <h5 className="">{input.video_name}</h5>
-                            <p className="">{((mediaFile?.size || 0) / 1024 / 1024).toFixed(3)} mb</p>
+                            {( !(editingItem?.video_name) && (<p className="">{((mediaFile?.size || 0) / 1024 / 1024).toFixed(3)} mb</p>))}
                           </div>
                         </div>
 
@@ -325,7 +430,7 @@ const VideoMetaModal = ({ isOpen, onClose, mediaFile }) => {
             <div className="flex items-end justify-end">
               <div className="flex items-center gap-x-2 bg-[#F52F00] py-4 px-6 rounded-full text-sm">
                 <BsPlusLg />
-                <CustomButton onClick={()=> submitNow()} title="Upload video" />
+                <CustomButton onClick={()=> submitNow()} title={(editingItem?.video_name) ? "Edit Video" : "Upload video"} />
               </div>
             </div>
           </div>
