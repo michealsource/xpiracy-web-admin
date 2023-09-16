@@ -5,6 +5,7 @@ const GENRE = "authentication:GENRE";
 const PLACEMENT = "authentication:PLACEMENT";
 const COLLECTION = "authentication:COLLECTION";
 const ALL_COLLECTION_DATA = "authentication:ALL_COLLECTION_DATA";
+const ALL_USER_DATA = "authentication:ALL_USER_DATA";
 const COMMUNITY = "authentication:COMMUNITY";
 const COMMUNITY_PEOPLE_WATCHING = "authentication:COMMUNITY_PEOPLE_WATCHING";
 
@@ -13,6 +14,19 @@ export const getGenresAction = createAsyncThunk(
   async (args, { rejectWithValue }) => {
     try {
       const response = await axiosClient().get("generic/genres");
+      return response.data;
+    } catch (error) {
+      console.log(error.response.data);
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
+
+export const getUsersAction = createAsyncThunk(
+  ALL_USER_DATA,
+  async (args, { rejectWithValue }) => {
+    try {
+      const response = await axiosClient().get("admin/users");
       return response.data;
     } catch (error) {
       console.log(error.response.data);

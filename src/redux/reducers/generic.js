@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { statAction } from "../actions/statAction";
-import { getAllCollectionDataAction, getCollectionAction, getCommunityAction, getCommunityPeopleWatchingAction, getGenresAction, getPlacementAction } from "../actions/genericAction";
+import { getAllCollectionDataAction, getCollectionAction, getCommunityAction, getCommunityPeopleWatchingAction, getGenresAction, getPlacementAction, getUsersAction } from "../actions/genericAction";
 const initialState = {
 
   genreStatus: "idle",
@@ -30,6 +30,7 @@ const initialState = {
   genres: [],
   placements: [],
   collections: [],
+  allUsers: [],
   allCollectionData: {},
   community: {},
   communityPeopleWatching: [],
@@ -72,6 +73,21 @@ const genericSlice = createSlice({
         state.genreStatus = "failed";
         // console.log(payload, "failllllllllll");
         state.genreError = payload?.message;
+    });
+
+    builder
+      .addCase(getUsersAction.pending, (state) => {
+        // state.genreStatus = "loading";
+      })
+      .addCase(getUsersAction.fulfilled, (state, { payload }) => {
+        state.genreStatus = "completed";
+        // update redux state
+        state.allUsers = payload?.payload;
+        // console.log(payload, "gggggggg");
+      })
+      .addCase(getUsersAction.rejected, (state, { payload }) => {
+        // state.genreStatus = "failed";
+        // state.genreError = payload?.message;
     });
 
     builder

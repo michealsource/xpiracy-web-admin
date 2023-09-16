@@ -7,6 +7,11 @@ import { smallAvatar } from "../../assets/svg";
 import { Input } from "@mantine/core";
 import CustomButton from "../../component/button";
 import { Link, NavLink } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { useEffect, useState } from "react";
+import axiosClient from "../../api/axios";
+import { getUsersAction } from "../../redux/actions/genericAction";
+import { toast } from "react-toastify";
 
 const sortIcon = <BsArrowDownShort />;
 
@@ -132,42 +137,72 @@ const data = [
 ];
 
 const Users = () => {
+
+  const { allUsers } = useSelector(_ => _.genericSlice);
+  const [Userdata, setUserData] = useState([]);
+  const dispatch = useDispatch();
+  const [selected, setSelected] = useState([]);
+  const [search, setSearch] = useState("");
+
+  useEffect(()=>{
+    if(search.length == 0){
+      setUserData(allUsers);
+    }else{
+      let data = allUsers.filter(item => {
+        return ( (item.first_name.toLowerCase().includes(search)) || (item.last_name.toLowerCase().includes(search)) );
+      });
+
+      setUserData(data);
+    }
+  }, [search]);
+
+  useEffect(()=>{
+    setUserData(allUsers);
+  }, [allUsers])
+
   const columns = [
     {
       name: "Name",
-      selector: "title",
+      // selector: "title",
       sortable: true,
 
       cell: (row) => (
         <div style={{ display: "flex", alignItems: "center" }}>
           <div className="py-5 ">
-            <img src={row.img} alt={row.title} width="20" height="20" />
+            <img src={row.photo} alt={row.first_name} width="20" height="20" />
           </div>
           <div>
-            <span style={{ marginLeft: "5px" }}>{row.title}</span>
+            <span style={{ marginLeft: "5px" }}>{row.first_name} {row.last_name}</span>
           </div>
         </div>
       ),
     },
     {
-      name: "Username",
-      selector: "text",
-      sortable: true,
-    },
-    {
       name: "Email",
-      selector: "content",
+      selector: "email",
       sortable: true,
     },
 
-    {
-      selector: "iconOne",
-      width: "5%",
-    },
+    // {
+    //   selector: "iconOne",
+    //   width: "5%",
+    // },
 
     {
-      selector: "iconTwo",
+      // selector: "iconTwo",
       width: "5%",
+      cell: (row) => (
+        <div>
+          <AiOutlineDelete onClick={()=>{
+            (async()=>{
+              await axiosClient().delete("/admin/users/"+row.id);
+              
+              dispatch(getUsersAction());
+              toast.success("deleted successfully");
+            })()
+          }} size={16} />
+        </div>
+      )
     },
   ];
 
@@ -176,22 +211,38 @@ const Users = () => {
       <div className="px-4 pt-6 md:px-12">
         <h4 className="text-xl font-normal">Users</h4>
         <div className="flex items-center justify-between">
-          <p className="text-[#AFAFAF]">All admin roles are listed below</p>
+          <p className="text-[#AFAFAF]">All user are listed below</p>
           <div className="flex items-center gap-x-5">
-            <div className="flex items-center gap-x-1">
-              <AiOutlineDelete size={20} />
-              <p>delete</p>
-            </div>
+            {
+              ((selected.length > 0) && (
+                <div style={{ cursor: 'pointer' }} onClick={()=> {
+                  (async()=>{
+                    for (let i = 0; i < selected.length; i++) {
+                      const id = selected[i].id;
+                      await axiosClient().delete("/admin/users/"+id);
+                    }
+                    
+                    dispatch(getUsersAction());
+                    toast.success("deleted successfully");
+                  })()
+                  }} className="flex items-center gap-x-1">
+                    <AiOutlineDelete size={20} />
+                    <p>delete</p>
+                </div>
+              ))
+            }
 
             <Input
               icon={<BsSearch size="1rem" />}
               placeholder="Search"
               styles={{ input: inputStyles }}
+              value={search}
+              onChange={(e)=> setSearch(e.target.value)}
             />
-            <NavLink to="/add-new-admin" className="flex items-center gap-x-2 bg-[#F52F00] py-3 px-4 rounded-full text-sm">
+            {/* <NavLink to="/add-new-admin" className="flex items-center gap-x-2 bg-[#F52F00] py-3 px-4 rounded-full text-sm">
               <BsPlusLg />
               <CustomButton title="Add new Admin" />
-            </NavLink>
+            </NavLink> */}
           </div>
         </div>
       </div>
@@ -200,9 +251,12 @@ const Users = () => {
       <div className="px-4 py-6">
         <DataTable
           columns={columns}
-          data={data}
+          data={Userdata}
           selectableRows
           pagination
+          onSelectedRowsChange={({selectedRows})=>{
+            setSelected(selectedRows);
+          }}
           sortIcon={sortIcon}
           customStyles={customStyles}
         />

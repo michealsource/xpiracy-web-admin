@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { signInAction, signUpAction } from "../actions/authenticationAction";
+import { myProfileAction, signInAction, signUpAction } from "../actions/authenticationAction";
 const initialState = {
   signingInStatus: "idle",
   signingInSuccess: "",
@@ -53,6 +53,22 @@ const authenticationSlice = createSlice({
         state.signingInStatus = "failed";
         console.log(payload, "failllllllllll");
         state.signingInError = payload?.message;
+      });
+
+    builder
+      .addCase(myProfileAction.pending, (state) => {
+        // state.signingInStatus = "loading";
+      })
+      .addCase(myProfileAction.fulfilled, (state, { payload }) => {
+        // state.signingInStatus = "completed";
+        // update redux state
+        state.userData = payload?.payload;
+        // console.log(payload, "gggggggg");
+      })
+      .addCase(myProfileAction.rejected, (state, { payload }) => {
+        // state.signingInStatus = "failed";
+        // console.log(payload, "failllllllllll");
+        // state.signingInError = payload?.message;
       });
 
     builder

@@ -3,16 +3,32 @@ import { Link } from "react-router-dom";
 
 import { useDisclosure } from "@mantine/hooks";
 import EditModal from "../../component/Modal/EditModal";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import axiosClient from "../../api/axios";
+import { myProfileAction } from "../../redux/actions/authenticationAction";
+import { toast } from "react-toastify";
 
 const AccountDetails = () => {
   const [isOpen, { toggle }] = useDisclosure();
 
+  const authSelector = useSelector(_ => _.authenticationSlice);
+
+  const adminData = (authSelector?.userData?.admin || {})
+
+  const dispatch = useDispatch();
+
   const [formData, setFormData] = useState({
-    firstName: "",
-    lastName: "",
-    email: "",
+    firstName: adminData?.first_name || "",
+    lastName: adminData?.last_name|| "",
   });
+
+  useEffect(()=>{
+    setFormData({
+      firstName: adminData?.first_name || "",
+      lastName: adminData?.last_name|| "",
+    })
+  }, [adminData])
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -22,7 +38,16 @@ const AccountDetails = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    alert("submitted");
+    (async()=>{
+      await axiosClient().patch("/admin/my", {
+        first_name: formData.firstName,
+        last_name: formData.lastName,
+      });
+
+      dispatch(myProfileAction());
+      toast.success("Updated Successfully");
+      // alert("submitted");
+    })();
   };
 
   return (

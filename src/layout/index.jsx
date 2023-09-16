@@ -6,7 +6,8 @@ import { useEffect, useState } from "react";
 import { getToken } from "../redux/storage";
 import { useDispatch } from "react-redux";
 import { statAction } from "../redux/actions/statAction";
-import { getAllCollectionDataAction, getCollectionAction, getCommunityAction, getCommunityPeopleWatchingAction, getGenresAction, getPlacementAction } from "../redux/actions/genericAction";
+import { getAllCollectionDataAction, getCollectionAction, getCommunityAction, getCommunityPeopleWatchingAction, getGenresAction, getPlacementAction, getUsersAction } from "../redux/actions/genericAction";
+import { myProfileAction } from "../redux/actions/authenticationAction";
 
 const AdminLayouts = () => {
   const dispatch = useDispatch();
@@ -22,6 +23,8 @@ const AdminLayouts = () => {
         dispatch(getAllCollectionDataAction());
         dispatch(getCommunityAction());
         dispatch(getCommunityPeopleWatchingAction());
+        dispatch(getUsersAction());
+        dispatch(myProfileAction());
       }
     }, [])
 
