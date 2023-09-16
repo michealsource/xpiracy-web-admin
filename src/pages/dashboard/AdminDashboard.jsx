@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { handsJesus, xpImgOne, xpImgTwo } from "../../assets/png";
 import {
   Sunshine,
@@ -16,6 +16,7 @@ import { useDisclosure } from "@mantine/hooks";
 
 import { Link } from "react-router-dom";
 import UploadNewVideoModal from "../../component/Modal/UploadNewVideoModal";
+import { getToken } from "../../redux/storage";
 
 export const inputStyles = {
   borderRadius: " 4.684px",
@@ -121,6 +122,13 @@ const AdminDashboard = () => {
     setCommentInputVisibility(updatedVisibility);
   };
   const [isOpen, { toggle }] = useDisclosure();
+
+  useEffect(()=>{
+    if(!getToken()){
+
+    }
+  }, [])
+
   return (
     <div className="w-full py-16 px-7 ">
       <div className="flex items-start justify-between gap-x-8 ">
