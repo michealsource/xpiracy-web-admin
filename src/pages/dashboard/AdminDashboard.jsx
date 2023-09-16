@@ -17,6 +17,9 @@ import { useDisclosure } from "@mantine/hooks";
 import { Link } from "react-router-dom";
 import UploadNewVideoModal from "../../component/Modal/UploadNewVideoModal";
 import { getToken } from "../../redux/storage";
+import { useSelector } from "react-redux";
+import stat from "../../redux/reducers/stat";
+import moment from "moment";
 
 export const inputStyles = {
   borderRadius: " 4.684px",
@@ -116,6 +119,16 @@ const AdminDashboard = () => {
     new Array(commentData.length).fill(false)
   );
 
+  const statSelector = useSelector(_ => _.statSlice)
+  const {allCollectionData} = useSelector(_ => _.genericSlice)
+
+  console.log(allCollectionData)
+
+  const [payItShowerSelected, setPayItShowerSelected] = useState(30);
+  const [payItShowerSelectedValue, setPayItShowerSelectedValue] = useState(0);
+  const [topVideos, setTopVideos] = useState([]);
+  const [topVideosMode, setTopVideosMode] = useState("randomExtendedInterview");
+
   const toggleCommentInputVisibility = (index) => {
     const updatedVisibility = [...commentInputVisibility];
     updatedVisibility[index] = !updatedVisibility[index];
@@ -124,10 +137,40 @@ const AdminDashboard = () => {
   const [isOpen, { toggle }] = useDisclosure();
 
   useEffect(()=>{
-    if(!getToken()){
 
-    }
-  }, [])
+    const allData = (allCollectionData || {})[topVideosMode];
+
+    let val = [];
+
+    (allData || []).map((item, index)=>{
+      if(index < 4){
+        val.push(item)
+      }
+    });
+
+    setTopVideos(val);
+  }, [topVideosMode, allCollectionData])
+
+  useEffect(()=>{
+    
+    let val = 0;
+    (statSelector?.stat?.payItForwardAllEntry || []).map((payit)=>{
+      const now = moment();
+      const dateFromPay = moment(payit.createdAt);
+
+      const tDiff = now.diff(dateFromPay, "days");
+
+      // console.log(tDiff)
+
+      if(payItShowerSelected == 0){
+        val++;
+      }else if(tDiff <= payItShowerSelected){
+        val++;
+      }
+    });
+
+    setPayItShowerSelectedValue(val);
+  }, [payItShowerSelected, statSelector.stat])
 
   return (
     <div className="w-full py-16 px-7 ">
@@ -138,7 +181,12 @@ const AdminDashboard = () => {
               <div className="py-10 space-y-20">
                 <div className="">
                   <h4 className="flex items-center text-3xl font-normal gap-x-2">
-                    Good morning,
+                    Good {(()=>{
+                      const [__, hour, am_pm] = moment().format("dddd,h,A").split(",");
+                      let dateOut = (am_pm === "AM") ? 'Morning': ((am_pm === 12 && hour < 6) ? 'Afternoon' : 'Evening') ;
+                      
+                      return dateOut;
+                    })()},
                     <span>
                       <img src={Sunshine} alt="" />
                     </span>{" "}
@@ -176,21 +224,21 @@ const AdminDashboard = () => {
                     Total Video <br /> Views
                   </h5>
                   <h4 className="border-b border-[#FFFFFF20] text-4xl font-normal mb-4">
-                    2000
+                    {statSelector?.stat?.allViews || "----"}
                   </h4>
                 </div>
                 <div className="space-y-4">
                   <div>
                     <h5 className="text-xl">Summary</h5>
-                    <p className="text-[#FFFFFF59] text-xs">Last 30 days</p>
+                    <p className="text-[#FFFFFF59] text-xs">in the system</p>
                   </div>
                   <div className="flex items-center justify-between">
                     <h5 className="text-base ">Total thank yous</h5>
-                    <p className="text-[#FFFFFF59] text-sm">45</p>
+                    <p className="text-[#FFFFFF59] text-sm">{statSelector?.stat?.totalThankYou || "----"}</p>
                   </div>
                   <div className="flex items-center justify-between">
                     <h5 className="text-base ">Total users</h5>
-                    <p className="text-[#FFFFFF59] text-sm">45</p>
+                    <p className="text-[#FFFFFF59] text-sm">{statSelector?.stat?.allUsers || "----"}</p>
                   </div>
                   <h4 className="border-t border-[#FFFFFF20] text-base font-normal mt-4 text-[#F52F00]">
                     Goto Analytics
@@ -206,21 +254,23 @@ const AdminDashboard = () => {
                     id="mySelect"
                     name="Extended interviews"
                     className="select-input"
+                    value={topVideosMode}
+                    onChange={e => setTopVideosMode(e.target.value)}
                   >
                     <option
-                      value="Extended interviews"
+                      value="randomExtendedInterview"
                       className="bg-black text-[#fff] text-sm"
                     >
                       Extended interviews
                     </option>
                     <option
-                      value="Trailer"
+                      value="randomTrailer"
                       className="bg-black text-[#fff] text-sm"
                     >
                       Trailer
                     </option>
                     <option
-                      value="bts"
+                      value="randomBehindTheScene"
                       className="bg-black text-[#fff] text-sm"
                     >
                       Bts
@@ -229,21 +279,22 @@ const AdminDashboard = () => {
                 </div>
                 <div className="border-b border-[#FFFFFF20] text-2xl font-normal mb-4"></div>
                 <div className="px-2 space-y-4">
-                  {topVideosData.map(
-                    ({ id, number, img, icon, views, title }) => (
+                  {topVideos.map(
+                    ({ id, number, coverImage: img, icon, views, video_name: title, keyword }) => (
                       <div key={id} className="flex flex-col">
                         <div className="relative flex items-center justify-between pt-6">
                           <h2 className="text-5xl text-[#8C8C8C] font-bold absolute -left-4 -top-2 ">
-                            {number}
+                            {/* {number} */}
                           </h2>
                           <div className="flex items-center gap-x-2">
-                            <img src={img} alt="" className="z-50" />
+                            <img src={img} width={120} height={120} alt="" className="z-50" />
                             <div>
                               <p>{title}</p>
-                              <img src={icon} alt="" />
+                              <p>{keyword}</p>
+                              {/* <img src={icon} alt="" /> */}
                             </div>
                           </div>
-                          <p>{views}</p>
+                          {/* <p>{keyword}</p> */}
                         </div>
                       </div>
                     )
@@ -327,31 +378,34 @@ const AdminDashboard = () => {
                   id="mySelect"
                   name="Last 30 days"
                   className="select-input"
+                  value={payItShowerSelected}
+                  onChange={e => setPayItShowerSelected(e.target.value)}
                 >
                   <option
-                    value="Last 30days"
+                    value={30}
+                    label="Last 30days"
                     className="bg-black text-[#fff] text-sm "
                   >
                     Last 30 days
                   </option>
                   <option
-                    value="Last 20days"
+                    value={60}
                     className="bg-black text-[#fff] text-sm"
                   >
-                    Last 20days
+                    Last 60days
                   </option>
                   <option
-                    value="Yesterday"
+                    value={0}
                     className="bg-black text-[#fff] text-sm"
                   >
-                    Yesterday
+                    All
                   </option>
                 </select>
               </div>
               <div className="space-y-2">
                 <img src={pifIcon} alt="" />
                 <div>
-                  <h4 className="text-4xl font-normal">2000</h4>
+                  <h4 className="text-4xl font-normal">{payItShowerSelectedValue}</h4>
                   <p className="text-base font-normal">
                     People have been paid <br />
                     forward for

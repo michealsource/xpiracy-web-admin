@@ -1,14 +1,8 @@
 import { createSlice } from "@reduxjs/toolkit";
-import {
-  getAllCollectionDataAction,
-  getCommunityAction,
-  getGenresAction,
-  getHasPayItBeforeAction,
-  getPlacementAction,
-  getProfileAction,
-  getRateAction,
-} from "../actions/genericAction";
+import { statAction } from "../actions/statAction";
+import { getAllCollectionDataAction, getCollectionAction, getCommunityAction, getCommunityPeopleWatchingAction, getGenresAction, getPlacementAction } from "../actions/genericAction";
 const initialState = {
+
   genreStatus: "idle",
   genreSuccess: "",
   genreError: "",
@@ -17,25 +11,28 @@ const initialState = {
   placementSuccess: "",
   placementError: "",
 
+  collectionStatus: "idle",
+  collectionSuccess: "",
+  collectionError: "",
+
   allCollectionDataStatus: "idle",
   allCollectionDataSuccess: "",
   allCollectionDataError: "",
-
-  rateStatus: "idle",
-  rateSuccess: "",
-  rateError: "",
 
   communityStatus: "idle",
   communitySuccess: "",
   communityError: "",
 
+  communityPeopleWatchingStatus: "idle",
+  communityPeopleWatchingSuccess: "",
+  communityPeopleWatchingError: "",
+
   genres: [],
   placements: [],
+  collections: [],
   allCollectionData: {},
-  rate: {},
   community: {},
-  hasPaidBefore: false,
-  profileData: null,
+  communityPeopleWatching: [],
 };
 
 const genericSlice = createSlice({
@@ -52,17 +49,15 @@ const genericSlice = createSlice({
       state.placementSuccess = "";
       state.placementError = "";
     },
-    clearPayItRecordStatus(state) {
-      state.hasPaidBefore = false;
-    },
-    clearAllCollectionDataStatus(state) {
-      state.allCollectionDataStatus = "idle";
-      state.allCollectionDataSuccess = "";
-      state.allCollectionDataError = "";
+    clearCollectionStatus(state) {
+      state.collectionStatus = "idle";
+      state.collectionSuccess = "";
+      state.collectionError = "";
     },
   },
 
   extraReducers: (builder) => {
+
     builder
       .addCase(getGenresAction.pending, (state) => {
         state.genreStatus = "loading";
@@ -77,7 +72,7 @@ const genericSlice = createSlice({
         state.genreStatus = "failed";
         // console.log(payload, "failllllllllll");
         state.genreError = payload?.message;
-      });
+    });
 
     builder
       .addCase(getPlacementAction.pending, (state) => {
@@ -93,7 +88,23 @@ const genericSlice = createSlice({
         state.placementStatus = "failed";
         // console.log(payload, "failllllllllll");
         state.placementError = payload?.message;
-      });
+    });
+
+    builder
+      .addCase(getCollectionAction.pending, (state) => {
+        state.collectionStatus = "loading";
+      })
+      .addCase(getCollectionAction.fulfilled, (state, { payload }) => {
+        state.collectionStatus = "completed";
+        // update redux state
+        state.collections = payload?.payload;
+        // console.log(payload, "gggggggg");
+      })
+      .addCase(getCollectionAction.rejected, (state, { payload }) => {
+        state.collectionStatus = "failed";
+        // console.log(payload, "failllllllllll");
+        state.collectionError = payload?.message;
+    });
 
     builder
       .addCase(getAllCollectionDataAction.pending, (state) => {
@@ -109,23 +120,7 @@ const genericSlice = createSlice({
         state.allCollectionDataStatus = "failed";
         // console.log(payload, "failllllllllll");
         state.allCollectionDataError = payload?.message;
-      });
-
-    builder
-      .addCase(getRateAction.pending, (state) => {
-        state.rateStatus = "loading";
-      })
-      .addCase(getRateAction.fulfilled, (state, { payload }) => {
-        state.rateStatus = "completed";
-        // update redux state
-        state.rate = payload?.payload;
-        // console.log(payload, "gggggggg");
-      })
-      .addCase(getRateAction.rejected, (state, { payload }) => {
-        state.rateStatus = "failed";
-        // console.log(payload, "failllllllllll");
-        state.rateError = payload?.message;
-      });
+    });
 
     builder
       .addCase(getCommunityAction.pending, (state) => {
@@ -135,49 +130,37 @@ const genericSlice = createSlice({
         state.communityStatus = "completed";
         // update redux state
         state.community = payload?.payload;
+        // console.log(payload, "gggggggg");
       })
       .addCase(getCommunityAction.rejected, (state, { payload }) => {
         state.communityStatus = "failed";
         // console.log(payload, "failllllllllll");
         state.communityError = payload?.message;
-      });
+    });
 
     builder
-      .addCase(getProfileAction.pending, (state) => {})
-      .addCase(getProfileAction.fulfilled, (state, { payload }) => {
-        // console.log('profileData', "profileData", profileData);
-        state.profileData = payload?.payload;
-        // console.log(payload, "gggggggg");
+      .addCase(getCommunityPeopleWatchingAction.pending, (state) => {
+        state.communityPeopleWatchingStatus = "loading";
       })
-      .addCase(getProfileAction.rejected, (state, { payload }) => {
-        // state.communityStatus = "failed";
-        // console.log(payload, "failllllllllll");
-        // state.communityError = payload?.message;
-      });
-
-    builder
-      .addCase(getHasPayItBeforeAction.pending, (state) => {
-        // state.communityStatus = "loading";
-      })
-      .addCase(getHasPayItBeforeAction.fulfilled, (state, { payload }) => {
-        // state.communityStatus = "completed";
+      .addCase(getCommunityPeopleWatchingAction.fulfilled, (state, { payload }) => {
+        state.communityPeopleWatchingStatus = "completed";
         // update redux state
-        state.hasPaidBefore = payload?.payload?.hasPaidBefore || false;
+        state.communityPeopleWatching = payload?.payload;
         // console.log(payload, "gggggggg");
       })
-      .addCase(getHasPayItBeforeAction.rejected, (state, { payload }) => {
-        // state.communityStatus = "failed";
+      .addCase(getCommunityPeopleWatchingAction.rejected, (state, { payload }) => {
+        state.communityPeopleWatchingStatus = "failed";
         // console.log(payload, "failllllllllll");
-        // state.communityError = payload?.message;
-      });
+        state.communityPeopleWatchingError = payload?.message;
+    });
+
   },
 });
 
 export const {
-  clearGenreStatus,
-  clearPlacementStatus,
-  clearAllCollectionDataStatus,
-  clearPayItRecordStatus,
+    clearGenreStatus,
+    clearPlacementStatus,
+    clearCollectionStatus
 } = genericSlice.actions;
 
 export default genericSlice.reducer;

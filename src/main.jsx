@@ -9,6 +9,8 @@ import { Provider as ReduxProvider, useDispatch } from "react-redux";
 import store from "./redux/store";
 import { PersistGate } from "redux-persist/integration/react";
 import { persistStore } from "redux-persist";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 let persistor = persistStore(store);
 
@@ -18,6 +20,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
       <PersistGate persistor={persistor}>
         <MantineProvider withGlobalStyles withNormalizeCSS>
           <RouterProvider router={router} />
+          <ToastContainer />
         </MantineProvider>
       </PersistGate>
       </ReduxProvider>

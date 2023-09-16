@@ -3,10 +3,63 @@ import { CrownJesus } from "../assets/png";
 import CustomButton from "../component/button";
 
 import FormInput from "../component/input/FormInput";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { toast } from "react-toastify";
+import * as yup from "yup";
+import { clearLoginStatus } from "../redux/reducers/authentication";
+import Loader from "../component/loader/loader";
+import { signInAction } from "../redux/actions/authenticationAction";
 
 const SignIn = () => {
+  const [isLoginOpen, setIsLoginOpen] = useState(true);
+  const [inputs, setInputs] = useState({
+    email: "",
+    password: "",
+  });
+
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const authenticationSlice = useSelector((_) => _.authenticationSlice);
+  const [input, setInput] = useState({
+    email: "",
+    password: "",
+  });
+  const [loading, setLoading] = useState(false);
+
+  const loginSchema = yup.object().shape({
+    email: yup.string().email().trim().required("email is required"),
+    password: yup.string().trim().required("password is required"),
+  });
+
+  const login = async () => {
+    try {
+      await loginSchema.validate(input);
+      dispatch(signInAction(input));
+    } catch (error) {
+      toast.error(`${error.message}`);
+    }
+  };
+
+  useEffect(() => {
+    if (authenticationSlice.signingInStatus === "loading") {
+      setLoading(true);
+    } else if (authenticationSlice.signingInStatus === "completed") {
+      dispatch(clearLoginStatus());
+      window.location.replace("/");
+      setLoading(false);
+    } else if (authenticationSlice.signingInStatus === "failed") {
+      setLoading(false);
+      toast.error(`${authenticationSlice.signingInError}`);
+
+      dispatch(clearLoginStatus());
+    }
+  }, [authenticationSlice]);
+
   return (
     <div className="w-full h-screen px-20 bg-center bg-no-repeat bg-cover border cp-admin-container bg-auth-bg">
+      {loading && <Loader />}
       <div className="relative flex items-center justify-between w-9/12 py-10 mx-auto md:flex-row gap-x-20">
         <div className="text-center md:text-left md:w-1/2 pt-[10rem] space-y-3">
           <div className="">
@@ -21,7 +74,7 @@ const SignIn = () => {
         </div>
         <div className="flex flex-col items-start justify-center w-full px-12 signin-container">
           <h4 className="text-4xl">Sign in</h4>
-          <form className="w-full">
+          <form onSubmit={()=> {return false}} className="w-full">
             <div className="py-8 space-y-8">
               <div className="space-y-2">
                 <label className="text-[#989898] text-base">Email</label>
@@ -29,10 +82,12 @@ const SignIn = () => {
                   className="focus:outline-none w-full focus:border-slate-500 focus:ring-slate-500 text-[#8E8C8C] px-4 auth-input"
                   type="text"
                   placeholder="Enter your email address"
+                  value={input.email}
+                  onChange={e => setInput({...input, email: e.target.value})}
                 />
               </div>
               <div className="space-y-2">
-                <FormInput title="Password" />
+                <FormInput title="Password" value={input.password} onValue={e => setInput({...input, password: e.target.value})} />
               </div>
               <div>
                 <CustomButton
@@ -41,6 +96,10 @@ const SignIn = () => {
                   width="100%"
                   padding="16.293px 0px 16.844px 0px"
                   borderRadius="45.221px"
+                  type="button"
+                  onClick={()=>{
+                    login();
+                  }}
                 />
               </div>
               <div className="flex items-center justify-between text-[#989898] text-base">

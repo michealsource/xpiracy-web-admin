@@ -3,11 +3,10 @@ import axiosClient from "../../api/axios";
 
 const GENRE = "authentication:GENRE";
 const PLACEMENT = "authentication:PLACEMENT";
+const COLLECTION = "authentication:COLLECTION";
 const ALL_COLLECTION_DATA = "authentication:ALL_COLLECTION_DATA";
-const RATE = "authentication:RATE";
 const COMMUNITY = "authentication:COMMUNITY";
-const GET_PAY_IT_BEFORE = "authentication:GET_PAY_IT_BEFORE";
-const PROFILE = "authentication:PROFILE";
+const COMMUNITY_PEOPLE_WATCHING = "authentication:COMMUNITY_PEOPLE_WATCHING";
 
 export const getGenresAction = createAsyncThunk(
   GENRE,
@@ -35,6 +34,19 @@ export const getPlacementAction = createAsyncThunk(
   }
 );
 
+export const getCollectionAction = createAsyncThunk(
+    COLLECTION,
+  async (args, { rejectWithValue }) => {
+    try {
+      const response = await axiosClient().get("admin/collection");
+      return response.data;
+    } catch (error) {
+      console.log(error.response.data);
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
+
 export const getAllCollectionDataAction = createAsyncThunk(
     ALL_COLLECTION_DATA,
   async (args, { rejectWithValue }) => {
@@ -48,24 +60,11 @@ export const getAllCollectionDataAction = createAsyncThunk(
   }
 );
 
-export const getRateAction = createAsyncThunk(
-    RATE,
-  async (args, { rejectWithValue }) => {
-    try {
-      const response = await axiosClient().get("pay/rate");
-      return response.data;
-    } catch (error) {
-      console.log(error.response.data);
-      return rejectWithValue(error.response.data);
-    }
-  }
-);
-
 export const getCommunityAction = createAsyncThunk(
     COMMUNITY,
   async (args, { rejectWithValue }) => {
     try {
-      const response = await axiosClient().get("community");
+      const response = await axiosClient().get("admin/community");
       return response.data;
     } catch (error) {
       console.log(error.response.data);
@@ -74,25 +73,11 @@ export const getCommunityAction = createAsyncThunk(
   }
 );
 
-export const getProfileAction = createAsyncThunk(
-    PROFILE,
+export const getCommunityPeopleWatchingAction = createAsyncThunk(
+    COMMUNITY_PEOPLE_WATCHING,
   async (args, { rejectWithValue }) => {
     try {
-      const response = await axiosClient().get("profile");
-      console.log(response.data);
-      return response.data;
-    } catch (error) {
-      console.log(error.response.data);
-      return rejectWithValue(error.response.data);
-    }
-  }
-);
-
-export const getHasPayItBeforeAction = createAsyncThunk(
-  GET_PAY_IT_BEFORE,
-  async (args, { rejectWithValue }) => {
-    try {
-      const response = await axiosClient().get("pay/users");
+      const response = await axiosClient().get("admin/community/what-people-are-watching");
       return response.data;
     } catch (error) {
       console.log(error.response.data);

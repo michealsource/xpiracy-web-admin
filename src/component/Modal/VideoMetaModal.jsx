@@ -5,8 +5,170 @@ import { closeIcon, uploadIcon } from "../../assets/svg";
 import { Cross } from "../../assets/png";
 import { BsPlusLg } from "react-icons/bs";
 import CustomButton from "../button";
+import { useCallback, useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useDropzone } from 'react-dropzone';
+import { toast } from "react-toastify";
+import Loader from "../loader/loader";
+import * as yup from "yup";
+import axiosClient from "../../api/axios";
+import { getAllCollectionDataAction } from "../../redux/actions/genericAction";
 
-const VideoMetaModal = ({ isOpen, onClose }) => {
+const VideoMetaModal = ({ isOpen, onClose, mediaFile }) => {
+  // console.log(mediaFile, "mediaFile")
+  const genericSelector = useSelector((state) => state.genericSlice);
+  const dispatch = useDispatch();
+
+  const [miniUrl, setMiniUrl] = useState()
+  const [loading, setLoading] = useState(false)
+  const [coverImage, setCoverImage] = useState(null)
+  const [subtitle, setSubtitle] = useState(null)
+  const [coverImageUrl, setCoverImageUrl] = useState(null)
+  const [input, setInput] = useState({
+    video_name: "",
+    desc: "",
+    placement: 1,
+    keyword: "",
+    collection: 1,
+  });
+
+  useEffect(()=>{
+    return ()=>{
+      setInput({
+        video_name: "",
+        desc: "",
+        placement: 1,
+        keyword: "",
+        collection: 1,
+      });
+      setCoverImage(null);
+      setCoverImageUrl(null);
+      setSubtitle(null);
+    }
+  }, [])
+
+  useEffect(()=>{
+    if(coverImage != null){
+      const reader = new FileReader()
+  
+        reader.onabort = () => console.log('file reading was aborted')
+        reader.onerror = () => console.log('file reading has failed')
+        reader.onload = () => {
+        // Do whatever you want with the file contents
+          const binaryStr = reader.result
+          console.log(binaryStr, "mediaFile")
+          setCoverImageUrl(binaryStr)
+      }
+      reader.readAsDataURL(coverImage)
+    }
+  }, [coverImage])
+
+  // for cover image
+  const onDrop = useCallback(acceptedFiles => {
+    const file = acceptedFiles[0];
+
+    // check type
+    if(!(file.type.includes("image"))){
+      toast.error("Media type not allowed")
+      return ;
+    }
+
+    setCoverImage(file);
+
+  }, []);
+
+  const {
+    getRootProps: getCoverImageRootProps,
+  } = useDropzone({
+    onDrop,
+    multiple: false,
+  });
+
+  // for subtitle
+  const onDropSubtitle = useCallback(acceptedFiles => {
+    const file = acceptedFiles[0];
+
+    console.log(file)
+    // check type
+    if(!( file.path.includes("vtt") || file.path.includes("srt"))){
+      toast.error("Media type not allowed")
+      return ;
+    }
+
+    console.log(file)
+
+    setSubtitle(file);
+
+  }, []);
+
+  const {
+    getRootProps: getSubtitleRootProps,
+  } = useDropzone({
+    onDrop: onDropSubtitle,
+    multiple: false,
+  });
+
+  const submitNow = async ()=>{
+    setLoading(true);
+    try {
+      const validationSchema = yup.object({
+        video_name: yup.string().trim().required("video name is required"),
+        keyword: yup.string().trim().required("keyword is required"),
+        placement: yup.string().trim().required("placement is required"),
+        collection: yup.string().trim().required("collection is required"),
+      });
+      await validationSchema.validate(input);
+
+      // if(inputImage == null){
+      //     (new Swal('Oops...', "Thumbnail required", 'error'));
+      //     return ;
+      // }
+
+      if (coverImage == null) {
+        toast.error("Thumbnail is required");
+        setLoading(false);
+        return;
+      }
+
+      // process
+      const fd = new FormData();
+      fd.append("video_name", input.video_name);
+      fd.append("keyword", input.keyword);
+      fd.append("placementId", input.placement);
+      fd.append("collectionId", input.collection);
+      fd.append("video", mediaFile);
+
+      if (subtitle != null) {
+        fd.append("subtitle", subtitle);
+      }
+
+      // if(inputVideoFourK != null){
+      //   fd.append("videoFourK", inputVideoFourK);
+      // }
+
+      await axiosClient().post("admin/content/upload", fd, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+
+      toast.success(
+        "Created Successfully, currently processing so it might take some minute depending on size, would be playable soon"
+      );
+
+      // dispatch for get new collection
+      dispatch(getAllCollectionDataAction());
+
+      setTimeout(() => {
+        dispatch(getAllCollectionDataAction());
+      }, 2000);
+
+      onClose();
+    } catch (error) {
+      // new Swal("Oops...", error.message, "error");
+      toast.error(error.message)
+    }
+    setLoading(false);
+  }
+
   return (
     <>
       <Modal
@@ -17,6 +179,7 @@ const VideoMetaModal = ({ isOpen, onClose }) => {
         centered
       >
         <div className="">
+          {loading && <Loader />}
           <div className="border-b border-b-[#FFFFFF38] text-2xl font-normal">
             Video Meta Data
           </div>
@@ -30,16 +193,21 @@ const VideoMetaModal = ({ isOpen, onClose }) => {
                   className="focus:outline-none w-full focus:border-slate-500 focus:ring-slate-500 text-[#8E8C8C] px-4 auth-input h-[73px]"
                   type="text"
                   placeholder=""
+                  value={input.video_name}
+                  onChange={e=> setInput({...input, video_name: e.target.value})}
                 />
               </div>
               <div className="space-y-2">
                 <label className="text-[#989898] text-base">
-                  Description (required)
+                  Keyword (required)
                 </label>
                 <div>
                   <textarea
                     placeholder=" "
                     className="resize-none textarea-class"
+                    style={{ height: 100 }}
+                    value={input.keyword}
+                    onChange={e=> setInput({...input, keyword: e.target.value})}
                   />
                 </div>
               </div>
@@ -47,18 +215,34 @@ const VideoMetaModal = ({ isOpen, onClose }) => {
                 <label className="text-[#989898] text-base">
                   Category (required)
                 </label>
-                <input
+                {/* <input
                   className="focus:outline-none w-full focus:border-slate-500 focus:ring-slate-500 text-[#8E8C8C] px-4 auth-input h-[73px]"
                   type="text"
                   placeholder=""
-                />
+                /> */}
+                <br />
+                
+                <select
+                  value={input.placement}
+                  onChange={(v) =>
+                    setValue({ ...input, placement: v.target.value })
+                  }
+                  // className=" rounded-2xl bg-[#E93C24] text-white p-3 my-4 w-1/2"
+                  className="textarea-class"
+                  style={{ height: 40 }}
+                >
+                  <option disabled>Placement</option>
+                  {genericSelector.placements.map((item) => (
+                    <option value={item.id}>{item.placement}</option>
+                  ))}
+                </select>
               </div>
             </div>
             <div className="w-5/12 space-y-4">
               <div className="p-4 welcome-admin-dsh">
                 <div className="space-y-4 ">
                   <h5 className="">Upload Thumbnail</h5>
-                  <div className="border border-dashed border-[#FFFFFF4D] bg-[#FF8F7414] rounded-sm ">
+                  <div {...getCoverImageRootProps()} className="border border-dashed border-[#FFFFFF4D] bg-[#FF8F7414] rounded-sm ">
                     <div className="flex flex-col items-center justify-center px-4 py-10 mx-auto">
                       <div>
                         <img src={uploadIcon} alt="" />
@@ -70,7 +254,7 @@ const VideoMetaModal = ({ isOpen, onClose }) => {
                         </span>
                       </h4>
                       <p className="text-[#FFFFFF4D]">
-                        Supported formats:JPEG,PNG,GIF,PDF
+                        Supported formats:JPEG,PNG,GIF
                       </p>
                     </div>
                   </div>
@@ -78,14 +262,17 @@ const VideoMetaModal = ({ isOpen, onClose }) => {
                     <div className="w-full ">
                       <div className="flex items-start justify-between ">
                         <div className="flex items-center gap-x-4">
-                          <img src={Cross} alt="" />
+                          {( (coverImageUrl) && (<img style={{ height: 70, width: 70 }} src={coverImageUrl} alt="" />))}
                           <div>
-                            <h5 className="">Passion of the Christ</h5>
-                            <p className="">200kb</p>
+                            <h5 className="">{input.video_name}</h5>
+                            <p className="">{((mediaFile?.size || 0) / 1024 / 1024).toFixed(3)} mb</p>
                           </div>
                         </div>
 
-                        <img src={closeIcon} alt="" />
+                        <img src={closeIcon} alt="" onClick={()=> {
+                          setCoverImage(null);
+                          setCoverImageUrl(null);
+                        }} />
                       </div>
 
                       {/* <div className="pt-5 space-y-1">
@@ -102,7 +289,7 @@ const VideoMetaModal = ({ isOpen, onClose }) => {
               <div className="p-4 welcome-admin-dsh">
                 <div className="space-y-4 ">
                   <h5 className="">Upload Subtitle</h5>
-                  <div className="border border-dashed border-[#FFFFFF4D] bg-[#FF8F7414] rounded-sm pb-4">
+                  <div {...getSubtitleRootProps()} className="border border-dashed border-[#FFFFFF4D] bg-[#FF8F7414] rounded-sm pb-4">
                     <div className="flex flex-col items-center justify-center px-4 py-10 mx-auto">
                       <div>
                         <img src={uploadIcon} alt="" />
@@ -115,16 +302,21 @@ const VideoMetaModal = ({ isOpen, onClose }) => {
                         </span>
                       </h4>
                       <p className="text-[#FFFFFF4D]">
-                        Supported formats:JPEG,PNG,GIF,PDF
+                        Supported formats:VTT,SRT
                       </p>
                     </div>
                   </div>
-                  <div className="container ">
-                    <div className="flex items-center justify-between p-2 border rounded-sm ">
-                      <p>Subtitle.srt</p>
-                      <img src={closeIcon} alt="" />
-                    </div>
-                  </div>
+
+                  {
+                    ((subtitle) && 
+                      <div className="container ">
+                        <div className="flex items-center justify-between p-2 border rounded-sm ">
+                          <p>{subtitle.path}</p>
+                          <img onClick={()=> setSubtitle(null)} src={closeIcon} alt="" />
+                        </div>
+                      </div>
+                    )
+                  }
                 </div>
               </div>
             </div>
@@ -133,7 +325,7 @@ const VideoMetaModal = ({ isOpen, onClose }) => {
             <div className="flex items-end justify-end">
               <div className="flex items-center gap-x-2 bg-[#F52F00] py-4 px-6 rounded-full text-sm">
                 <BsPlusLg />
-                <CustomButton title="Upload video" />
+                <CustomButton onClick={()=> submitNow()} title="Upload video" />
               </div>
             </div>
           </div>
