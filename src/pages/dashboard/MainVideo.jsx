@@ -150,6 +150,8 @@ const MainVideo = ({allCollectionData, currentTab}) => {
   const [isOpen, { toggle }] = useDisclosure();
   const dispatch = useDispatch();
 
+  const [selected, setSelected] = useState([]);
+
   const [columnData, setColumnData] = useState([]);
 
   useEffect(()=>{
@@ -278,8 +280,52 @@ const MainVideo = ({allCollectionData, currentTab}) => {
   return (
     <div className="table-container pt-20 relative">
       <div className="fixed right-5 mx-2 flex items-center gap-x-2 py-8 -top-2 border-6">
-        <AiOutlineDelete />
-        <p>delete</p>
+        {
+          (selected.length > 0) && (
+            <div onClick={()=>{
+              (async()=>{
+                let type = "content";
+                switch (currentTab) {
+                  case "video":
+                    type = "content";
+                    break;
+                  case "interview":
+                    type = "extended_interview";
+                    break;
+                  case "trailer":
+                    type = "trailers";
+                    break;
+                    
+                  case "bts":
+                    type = "behind_the_scene";
+                    break;
+                
+                  default:
+                    type = "content";
+                    break;
+                }
+    
+                let payload = {
+                  ids: selected.map(item => item.id),
+                  type
+                }
+    
+                try {
+                  await axiosClient().post(`/admin/content/bulkDelete`, payload)
+                  toast.success("deleted, reflecting");
+                  dispatch(getAllCollectionDataAction());
+                  dispatch(getCollectionAction());
+                } catch (error) {
+                  console.log(error);
+                  toast.error("an error occurred "+ error.message);
+                }
+              })();
+            }}>
+              <AiOutlineDelete />
+              <p>delete</p>
+            </div>
+          )
+        }
         <Input
           icon={<BsSearch size="1rem" />}
           placeholder="Search"
@@ -292,6 +338,10 @@ const MainVideo = ({allCollectionData, currentTab}) => {
           columns={columns}
           data={columnData}
           selectableRows
+          onSelectedRowsChange={({allSelected, selectedCount, selectedRows})=>{
+            console.log(selectedRows);
+            setSelected(selectedRows)
+          }}
           pagination
           sortIcon={sortIcon}
           customStyles={customStyles}

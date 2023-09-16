@@ -2,7 +2,7 @@ import { Outlet } from "react-router-dom";
 
 import Sidebar from "../component/sidebar";
 import Navbar from "../component/navigations/Navbar";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { getToken } from "../redux/storage";
 import { useDispatch } from "react-redux";
 import { statAction } from "../redux/actions/statAction";
