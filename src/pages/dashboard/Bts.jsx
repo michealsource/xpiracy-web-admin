@@ -135,7 +135,7 @@ export const inputStyles = {
   },
 };
 
-const Bts = () => {
+const Bts = ({allCollectionData}) => {
   const [isOpen, { toggle }] = useDisclosure();
   const columns = [
     {

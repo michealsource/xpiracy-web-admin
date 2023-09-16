@@ -134,7 +134,7 @@ export const inputStyles = {
   },
 };
 
-const ExtendedInterview = () => {
+const ExtendedInterview = ({allCollectionData}) => {
   const [isOpen, { toggle }] = useDisclosure();
   const columns = [
     {

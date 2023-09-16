@@ -7,6 +7,12 @@ import { MdEdit } from "react-icons/md";
 import { BsArrowDownShort } from "react-icons/bs";
 import { useDisclosure } from "@mantine/hooks";
 import VideoMetaModal from "../../component/Modal/VideoMetaModal";
+import { useEffect, useState } from "react";
+import moment from "moment";
+import { useDispatch } from "react-redux";
+import { toast } from "react-toastify";
+import axiosClient from "../../api/axios";
+import { getAllCollectionDataAction, getCollectionAction } from "../../redux/actions/genericAction";
 
 const sortIcon = <BsArrowDownShort />;
 
@@ -140,55 +146,133 @@ export const inputStyles = {
   },
 };
 
-const MainVideo = () => {
+const MainVideo = ({allCollectionData, currentTab}) => {
   const [isOpen, { toggle }] = useDisclosure();
+  const dispatch = useDispatch();
+
+  const [columnData, setColumnData] = useState([]);
+
+  useEffect(()=>{
+    console.log(currentTab)
+    if(currentTab == 'video'){
+      let _data = [];
+      (allCollectionData?.allCollections || []).map((coll)=>{
+        _data = [
+          ..._data,
+          ...(coll?.contents || [])
+        ];
+      });
+
+      setColumnData(_data);
+    }else{
+      switch (currentTab) {
+        case "interview":
+          setColumnData(allCollectionData?.randomExtendedInterview);
+          break ;
+        case "trailer":
+          setColumnData(allCollectionData?.randomTrailer);
+          break ;
+        case "bts":
+        default:
+          setColumnData(allCollectionData?.randomBehindTheScene);
+          break;
+      }
+    }
+  }, [currentTab, allCollectionData]);
 
   const columns = [
     {
       name: "Videos",
-      selector: "title",
+      // selector: "video_name",
       sortable: true,
       width: "50%",
 
       cell: (row) => (
         <div style={{ display: "flex", alignItems: "center" }}>
           <div className="py-5 pr-3">
-            <img src={row.img} alt={row.title} width="120" height="120" />
+            <img src={row.coverImage} alt={row.title} width="120" height="120" />
           </div>
           <div>
             <span style={{ marginLeft: "5px", fontWeight: "700" }}>
-              {row.title}
+              {row.video_name}
             </span>
-            <p style={{ marginLeft: "5px", fontSize: "12px" }}>{row.content}</p>
+            <p style={{ marginLeft: "5px", fontSize: "12px" }}>{row.keyword}</p>
           </div>
         </div>
       ),
     },
     {
       name: "Upload Date",
-      selector: "year",
+      // selector: "createdAt",
       sortable: true,
+      cell: (row) =>(
+        moment(row.createdAt).calendar()
+      )
     },
+    // {
+    //   name: "Views",
+    //   selector: "views",
+    //   sortable: true,
+    // },
+    // {
+    //   name: "Comment",
+    //   selector: "comment",
+    //   sortable: true,
+    // },
     {
-      name: "Views",
-      selector: "views",
-      sortable: true,
-    },
-    {
-      name: "Comment",
-      selector: "comment",
-      sortable: true,
-    },
-    {
-      selector: "iconOne",
+      // selector: "iconOne",
       cell: (row) => (
         <button onClick={toggle} className="text-[#8991A0]">
-          {row.iconOne}
+          {/* {row.iconOne} */}
+          <MdEdit size={20} />
         </button>
       ),
     },
     {
-      selector: "iconTwo",
+      // selector: "iconTwo",
+      cell: (row)=> (
+        <div onClick={()=>{
+          (async()=>{
+            let type = "content";
+            switch (currentTab) {
+              case "video":
+                type = "content";
+                break;
+              case "interview":
+                type = "extended_interview";
+                break;
+              case "trailer":
+                type = "trailers";
+                break;
+                
+              case "bts":
+                type = "behind_the_scene";
+                break;
+            
+              default:
+                type = "content";
+                break;
+            }
+
+            // let payload = {
+            //   id: row.id,
+            //   type
+            // }
+
+            try {
+              await axiosClient().delete(`/admin/content?id=${row.id}&type=${type}`)
+              toast.success("deleted, reflecting");
+              dispatch(getAllCollectionDataAction());
+              dispatch(getCollectionAction());
+            } catch (error) {
+              console.log(error);
+              toast.error("an error occurred "+ error.message);
+            }
+          })();
+        }}>
+          <AiOutlineDelete size={20} />
+        </div>
+      )
     },
   ];
   return (
@@ -202,10 +286,11 @@ const MainVideo = () => {
           styles={{ input: inputStyles }}
         />
       </div>
+      {currentTab}
       <div>
         <DataTable
           columns={columns}
-          data={data}
+          data={columnData}
           selectableRows
           pagination
           sortIcon={sortIcon}

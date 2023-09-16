@@ -119,10 +119,11 @@ const AdminDashboard = () => {
     new Array(commentData.length).fill(false)
   );
 
+  const authSelector = useSelector(_ => _.authenticationSlice)
   const statSelector = useSelector(_ => _.statSlice)
   const {allCollectionData} = useSelector(_ => _.genericSlice)
 
-  console.log(allCollectionData)
+  console.log(authSelector)
 
   const [payItShowerSelected, setPayItShowerSelected] = useState(30);
   const [payItShowerSelectedValue, setPayItShowerSelectedValue] = useState(0);
@@ -191,7 +192,7 @@ const AdminDashboard = () => {
                       <img src={Sunshine} alt="" />
                     </span>{" "}
                   </h4>
-                  <h4 className="text-3xl font-normal">Seun!</h4>
+                  <h4 className="text-3xl font-normal">{authSelector?.userData?.admin?.first_name || "Seun"}!</h4>
 
                   <p className="text-base">
                     Welcome to Christpiracys admin dashboard!

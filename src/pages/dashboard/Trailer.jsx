@@ -134,7 +134,7 @@ export const inputStyles = {
   },
 };
 
-const Trailer = () => {
+const Trailer = ({allCollectionData}) => {
   const [isOpen, { toggle }] = useDisclosure();
   const columns = [
     {
