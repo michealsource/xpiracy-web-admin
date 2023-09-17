@@ -152,6 +152,7 @@ const All = ({search, selected, setSelected}) => {
   const {allCollectionData, comments, commentUsers} = useSelector(_ => _.genericSlice)
 
   const [commentData, setCommentData] = useState([]);
+  const [activeComment, setActiveComment] = useState({});
 
   useEffect(()=>{
     setCommentData(comments)
@@ -217,7 +218,10 @@ const All = ({search, selected, setSelected}) => {
       selector: "reply",
       width: "5%",
       cell: (row) => (
-        <button onClick={toggle} className="text-[#8991A0]">
+        <button onClick={()=> {
+          setActiveComment(row);
+          toggle()
+          }} className="text-[#8991A0]">
           Reply
         </button>
       ),
@@ -249,7 +253,7 @@ const All = ({search, selected, setSelected}) => {
           customStyles={customStyles}
         />
       </div>
-      <TestModal isOpen={isOpen} onClose={toggle} />
+      <TestModal activeComment={activeComment} isOpen={isOpen} onClose={toggle} />
     </div>
   );
 };

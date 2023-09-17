@@ -5,6 +5,8 @@ import { useState } from "react";
 import { deleteIcon, replyIcon, womanAvatar } from "../../assets/svg";
 import CustomButton from "../button";
 import { AiOutlineSmile } from "react-icons/ai";
+import moment from "moment";
+import { replyToACommentFireStore } from "../../functions/firebase";
 
 export const inputStyles = {
   borderRadius: " 4.684px",
@@ -48,7 +50,9 @@ const commentData = [
   },
 ];
 
-const TestModal = ({ isOpen, onClose }) => {
+const TestModal = ({ isOpen, onClose, activeComment }) => {
+
+  const [input, setInput] = useState();
   const [commentInputVisibility, setCommentInputVisibility] = useState(
     new Array(commentData.length).fill(false)
   );
@@ -69,53 +73,66 @@ const TestModal = ({ isOpen, onClose }) => {
     >
       <div className="">
         <div className="space-y-4">
-          {commentData.map(
-            ({ id, time, name, replyicon, bin, icon, content, text }) => (
+          {(activeComment?.replies || []).map(
+            ({ dateCommented: time, user, comment }, id) => (
               <div key={id} className="space-y-2">
                 <div className="flex items-center gap-x-2">
                   <div>
-                    <img src={icon} alt="" />
+                    <img src={user?.photo || womanAvatar} alt="" width={70} height={70} />
                   </div>
-                  <h5 className="text-sm">{name}</h5>
-                  <p className="text-[#F52F00] text-[8px]">{time}</p>
+                  <h5 className="text-sm">{user?.first_name} {user?.lastname}</h5>
+                  <p className="text-[#F52F00] text-[8px]">{moment(time).calendar()}</p>
                 </div>
-                <p className="text-[#939393] text-xs">{content}</p>
+                <p className="text-[#939393] text-xs">{comment}</p>
                 <div className="flex items-center justify-between">
-                  <button
+                  {/* <button
                     className="flex items-center gap-x-2"
                     onClick={() => toggleCommentInputVisibility(id)}
                   >
                     <img src={replyicon} alt="" />
                     <p className="text-[#8991A0] text-xs">{text}</p>
-                  </button>
-                  <img src={bin} alt="" />
+                  </button> */}
+                  {/* <img src={bin} alt="" /> */}
                 </div>
-                {commentInputVisibility[id] && (
-                  <div className="border px-2 py-1 bg-[#FFFFFF2E] border-[#B4BBC680] rounded-sm">
-                    <p className="my-1">Type your comment here</p>
-                    <Input
-                      placeholder=""
-                      rightSection={
-                        <div className="flex items-center gap-x-2 mr-20">
-                          <AiOutlineSmile
-                            size="1.2rem"
-                            style={{ opacity: 0.5, color: "#eee" }}
-                          />
-                          <CustomButton
-                            title="Send"
-                            color="#F52F00"
-                            borderRadius="20px"
-                            padding="6px 12px"
-                          />
-                        </div>
-                      }
-                      styles={{ input: inputStyles }}
-                    />
-                  </div>
-                )}
+                {/* {commentInputVisibility[id] && (
+                  
+                )} */}
               </div>
             )
           )}
+          
+          <div className="border px-2 py-1 bg-[#FFFFFF2E] border-[#B4BBC680] rounded-sm">
+            <p className="my-1">Type your comment here</p>
+            <Input
+              placeholder=""
+              value={input}
+              onChange={e => setInput(e.target.value)}
+              rightSection={
+                <div className="flex items-center gap-x-2 mr-20">
+                  {/* <AiOutlineSmile
+                    size="1.2rem"
+                    style={{ opacity: 0.5, color: "#eee" }}
+                  /> */}
+                  <CustomButton
+                    title="Send"
+                    color="#F52F00"
+                    borderRadius="20px"
+                    padding="6px 12px"
+                    onClick={()=>{
+                      replyToACommentFireStore({
+                        commentId: activeComment?.commentId,
+                        replies: activeComment?.replies || []
+                      }, input);
+
+                      setInput("");
+                      onClose();
+                    }}
+                  />
+                </div>
+              }
+              styles={{ input: inputStyles }}
+            />
+          </div>
         </div>
         
       </div>

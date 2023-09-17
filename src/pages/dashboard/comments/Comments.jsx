@@ -7,6 +7,7 @@ import Unread from "./Unread";
 import { useMemo, useState } from "react";
 import All from "./All";
 import { deleteCommentFromFireStore } from "../../../functions/firebase";
+import { useSelector } from "react-redux";
 
 const commentTabs = [
   // {
@@ -42,6 +43,7 @@ const Comment = () => {
   const [currentTab, setCurrentTab] = useState("comment");
   const [search, setSearch] = useState("");
   const [selected, setSelected] = useState([]);
+  const {comments} = useSelector(_ => _.genericSlice)
 
   const updateCommentTabData = useMemo(() => {
     switch (currentTab) {
@@ -55,7 +57,7 @@ const Comment = () => {
       default:
         return <All search={search} selected={selected} setSelected={setSelected} />;
     }
-  }, [currentTab, search, selected]);
+  }, [currentTab, search, comments, selected]);
 
   return (
     <div className="comment-table-container  my-20 mx-10">

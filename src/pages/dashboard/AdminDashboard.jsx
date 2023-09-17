@@ -350,10 +350,10 @@ const AdminDashboard = () => {
                               onChange={e=> setReply(e.target.value)}
                               rightSection={
                                 <div className="flex items-center mr-20 gap-x-2">
-                                  <AiOutlineSmile
+                                  {/* <AiOutlineSmile
                                     size="1.2rem"
                                     style={{ opacity: 0.5, color: "#eee" }}
-                                  />
+                                  /> */}
                                   <CustomButton
                                     title="Send"
                                     color="#F52F00"
