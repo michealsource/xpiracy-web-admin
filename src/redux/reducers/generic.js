@@ -34,6 +34,8 @@ const initialState = {
   allCollectionData: {},
   community: {},
   communityPeopleWatching: [],
+  commentUsers: [],
+  comments: [],
 };
 
 const genericSlice = createSlice({
@@ -44,6 +46,10 @@ const genericSlice = createSlice({
       state.genreStatus = "idle";
       state.genreSuccess = "";
       state.genreError = "";
+    },
+    setCommentsRecords(state, action) {
+      state.commentUsers = action.payload.users;
+      state.comments = action.payload.comments;
     },
     clearPlacementStatus(state) {
       state.placementStatus = "idle";
@@ -176,7 +182,8 @@ const genericSlice = createSlice({
 export const {
     clearGenreStatus,
     clearPlacementStatus,
-    clearCollectionStatus
+    clearCollectionStatus,
+    setCommentsRecords
 } = genericSlice.actions;
 
 export default genericSlice.reducer;

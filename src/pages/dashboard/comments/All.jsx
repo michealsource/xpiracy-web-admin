@@ -6,6 +6,9 @@ import { smallAvatar } from "../../../assets/svg";
 import { useDisclosure } from "@mantine/hooks";
 // import ReplyModal from "../../../component/Modal/ReplyModal";
 import TestModal from "../../../component/Modal/TestModal";
+import { useSelector } from "react-redux";
+import moment from "moment";
+import { useEffect, useState } from "react";
 
 const sortIcon = <BsArrowDownShort />;
 
@@ -143,41 +146,62 @@ const data = [
   },
 ];
 
-const All = () => {
+const All = ({search}) => {
   const [isOpen, { toggle }] = useDisclosure();
+  const {allCollectionData, comments, commentUsers} = useSelector(_ => _.genericSlice)
+
+  const [commentData, setCommentData] = useState([]);
+
+  useEffect(()=>{
+    setCommentData(comments)
+  }, [comments]);
+
+  useEffect(()=>{
+    console.log(search);
+    if(search == ""){
+      setCommentData(comments);
+    }else{
+      setCommentData(comments.filter(comment => {
+        return (comment.comment.toLowerCase().includes(search.toLowerCase()));
+      }));
+    }
+  }, [search, comments])
 
   const columns = [
     {
       name: "Name",
-      selector: "title",
+      // selector: "title",
       sortable: true,
       width: "15%",
 
       cell: (row) => (
         <div style={{ display: "flex", alignItems: "center" }}>
           <div className="py-5 ">
-            <img src={row.img} alt={row.title} width="20" height="20" />
+            <img src={row.user?.photo} alt={""} width="20" height="20" />
           </div>
           <div>
-            <span style={{ marginLeft: "5px" }}>{row.title}</span>
+            <span style={{ marginLeft: "5px" }}>{row.user?.first_name} {row.user?.last_name}</span>
           </div>
         </div>
       ),
     },
     {
       name: "Comment",
-      selector: "content",
+      selector: "comment",
       sortable: true,
     },
-    {
-      name: "Video",
-      selector: "text",
-      sortable: true,
-    },
+    // {
+    //   name: "Video",
+    //   selector: "text",
+    //   sortable: true,
+    // },
     {
       name: "Date",
-      selector: "date",
+      // selector: "date",
       sortable: true,
+      cell: (row) => (
+        <div>{moment(row.dateCommented).calendar()}</div>
+      )
     },
     // {
     //   selector: "iconOne",
@@ -193,13 +217,16 @@ const All = () => {
       width: "5%",
       cell: (row) => (
         <button onClick={toggle} className="text-[#8991A0]">
-          {row.reply}
+          Reply
         </button>
       ),
     },
     {
-      selector: "iconTwo",
+      // selector: "iconTwo",
       width: "5%",
+      cell: (row)=>(
+        <AiOutlineDelete size={16} />
+      )
     },
   ];
 
@@ -209,7 +236,7 @@ const All = () => {
       <div>
         <DataTable
           columns={columns}
-          data={data}
+          data={commentData}
           selectableRows
           pagination
           sortIcon={sortIcon}

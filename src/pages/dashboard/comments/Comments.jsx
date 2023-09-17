@@ -8,21 +8,21 @@ import { useMemo, useState } from "react";
 import All from "./All";
 
 const commentTabs = [
-  {
-    id: 0,
-    title: "All",
-    slug: "all",
-  },
-  {
-    id: 0,
-    title: "Read",
-    slug: "read",
-  },
-  {
-    id: 1,
-    title: "Unread",
-    slug: "unread",
-  },
+  // {
+  //   id: 0,
+  //   title: "All",
+  //   slug: "all",
+  // },
+  // {
+  //   id: 0,
+  //   title: "Read",
+  //   slug: "read",
+  // },
+  // {
+  //   id: 1,
+  //   title: "Unread",
+  //   slug: "unread",
+  // },
 ];
 
 export const inputStyles = {
@@ -39,20 +39,21 @@ export const inputStyles = {
 
 const Comment = () => {
   const [currentTab, setCurrentTab] = useState("comment");
+  const [search, setSearch] = useState("");
 
   const updateCommentTabData = useMemo(() => {
     switch (currentTab) {
       case "all":
-        return <All />;
+        return <All search={search} />;
       case "read":
         return <Read />;
       case "unread":
         return <Unread />;
 
       default:
-        return <All />;
+        return <All search={search} />;
     }
-  }, [currentTab]);
+  }, [currentTab, search]);
 
   return (
     <div className="comment-table-container  my-20 mx-10">
@@ -82,6 +83,8 @@ const Comment = () => {
           icon={<BsSearch size="1rem" />}
           placeholder="Search"
           styles={{ input: inputStyles }}
+          value={search}
+          onChange={e => setSearch(e.target.value)}
         />
       </div>
     </div>

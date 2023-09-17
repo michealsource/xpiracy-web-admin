@@ -121,9 +121,9 @@ const AdminDashboard = () => {
 
   const authSelector = useSelector(_ => _.authenticationSlice)
   const statSelector = useSelector(_ => _.statSlice)
-  const {allCollectionData} = useSelector(_ => _.genericSlice)
+  const {allCollectionData, comments, commentUsers} = useSelector(_ => _.genericSlice)
 
-  console.log(authSelector)
+  console.log(comments, commentUsers, "data")
 
   const [payItShowerSelected, setPayItShowerSelected] = useState(30);
   const [payItShowerSelectedValue, setPayItShowerSelectedValue] = useState(0);
@@ -313,51 +313,56 @@ const AdminDashboard = () => {
                 Recent Comments
               </h4>
               <div className="space-y-4">
-                {commentData.map(
-                  ({ id, time, name, replyicon, bin, icon, content, text }) => (
-                    <div key={id} className="space-y-2">
-                      <div className="flex items-center gap-x-2">
-                        <div>
-                          <img src={icon} alt="" />
+                {comments.map(
+                  ({ dateCommented: id, dateCommented: time, user, comment: content }, index) => {
+                    if(index >= 4){
+                      return null;
+                    }
+                    return (
+                      <div key={id} className="space-y-2">
+                        <div className="flex items-center gap-x-2">
+                          <div>
+                            <img src={user?.photo} alt="" />
+                          </div>
+                          <h5 className="text-sm">{user?.first_name} {user?.last_name}</h5>
+                          <p className="text-[#F52F00] text-[8px]">{moment(time).calendar()}</p>
                         </div>
-                        <h5 className="text-sm">{name}</h5>
-                        <p className="text-[#F52F00] text-[8px]">{time}</p>
-                      </div>
-                      <p className="text-[#939393] text-xs">{content}</p>
-                      <div className="flex items-center justify-between">
-                        <button
-                          className="flex items-center gap-x-2"
-                          onClick={() => toggleCommentInputVisibility(id)}
-                        >
-                          <img src={replyicon} alt="" />
-                          <p className="text-[#8991A0] text-xs">{text}</p>
-                        </button>
-                        <img src={bin} alt="" />
-                      </div>
-                      {commentInputVisibility[id] && (
-                        <div>
-                          <Input
-                            placeholder="Type your comment here"
-                            rightSection={
-                              <div className="flex items-center mr-20 gap-x-2">
-                                <AiOutlineSmile
-                                  size="1.2rem"
-                                  style={{ opacity: 0.5, color: "#eee" }}
-                                />
-                                <CustomButton
-                                  title="Send"
-                                  color="#F52F00"
-                                  borderRadius="20px"
-                                  padding="6px 12px"
-                                />
-                              </div>
-                            }
-                            styles={{ input: inputStyles }}
-                          />
+                        <p className="text-[#939393] text-xs">{content}</p>
+                        <div className="flex items-center justify-between">
+                          <button
+                            className="flex items-center gap-x-2"
+                            onClick={() => toggleCommentInputVisibility(id)}
+                          >
+                            <img src={replyIcon} alt="" />
+                            <p className="text-[#8991A0] text-xs">Reply</p>
+                          </button>
+                          <img src={deleteIcon} alt="" />
                         </div>
-                      )}
-                    </div>
+                        {commentInputVisibility[id] && (
+                          <div>
+                            <Input
+                              placeholder="Type your comment here"
+                              rightSection={
+                                <div className="flex items-center mr-20 gap-x-2">
+                                  <AiOutlineSmile
+                                    size="1.2rem"
+                                    style={{ opacity: 0.5, color: "#eee" }}
+                                  />
+                                  <CustomButton
+                                    title="Send"
+                                    color="#F52F00"
+                                    borderRadius="20px"
+                                    padding="6px 12px"
+                                  />
+                                </div>
+                              }
+                              styles={{ input: inputStyles }}
+                            />
+                          </div>
+                        )}
+                      </div>
                   )
+                }
                 )}
               </div>
               <Link
