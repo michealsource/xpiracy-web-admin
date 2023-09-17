@@ -9,6 +9,7 @@ import TestModal from "../../../component/Modal/TestModal";
 import { useSelector } from "react-redux";
 import moment from "moment";
 import { useEffect, useState } from "react";
+import { deleteCommentFromFireStore } from "../../../functions/firebase";
 
 const sortIcon = <BsArrowDownShort />;
 
@@ -146,7 +147,7 @@ const data = [
   },
 ];
 
-const All = ({search}) => {
+const All = ({search, selected, setSelected}) => {
   const [isOpen, { toggle }] = useDisclosure();
   const {allCollectionData, comments, commentUsers} = useSelector(_ => _.genericSlice)
 
@@ -177,7 +178,7 @@ const All = ({search}) => {
       cell: (row) => (
         <div style={{ display: "flex", alignItems: "center" }}>
           <div className="py-5 ">
-            <img src={row.user?.photo} alt={""} width="20" height="20" />
+            <img src={row.user?.photo || smallAvatar} alt={""} width="20" height="20" />
           </div>
           <div>
             <span style={{ marginLeft: "5px" }}>{row.user?.first_name} {row.user?.last_name}</span>
@@ -225,7 +226,9 @@ const All = ({search}) => {
       // selector: "iconTwo",
       width: "5%",
       cell: (row)=>(
-        <AiOutlineDelete size={16} />
+        <AiOutlineDelete onClick={()=>{
+          deleteCommentFromFireStore(row.commentId)
+        }} size={16} />
       )
     },
   ];
@@ -239,6 +242,9 @@ const All = ({search}) => {
           data={commentData}
           selectableRows
           pagination
+          onSelectedRowsChange={({selectedRows})=>{
+            setSelected(selectedRows);
+          }}
           sortIcon={sortIcon}
           customStyles={customStyles}
         />

@@ -6,6 +6,7 @@ import Read from "./Read";
 import Unread from "./Unread";
 import { useMemo, useState } from "react";
 import All from "./All";
+import { deleteCommentFromFireStore } from "../../../functions/firebase";
 
 const commentTabs = [
   // {
@@ -40,20 +41,21 @@ export const inputStyles = {
 const Comment = () => {
   const [currentTab, setCurrentTab] = useState("comment");
   const [search, setSearch] = useState("");
+  const [selected, setSelected] = useState([]);
 
   const updateCommentTabData = useMemo(() => {
     switch (currentTab) {
       case "all":
-        return <All search={search} />;
+        return <All search={search} selected={selected} setSelected={setSelected} />;
       case "read":
         return <Read />;
       case "unread":
         return <Unread />;
 
       default:
-        return <All search={search} />;
+        return <All search={search} selected={selected} setSelected={setSelected} />;
     }
-  }, [currentTab, search]);
+  }, [currentTab, search, selected]);
 
   return (
     <div className="comment-table-container  my-20 mx-10">
@@ -77,8 +79,19 @@ const Comment = () => {
       </div>
       <div className="px-4 my-4 md:px-12">{updateCommentTabData}</div>
       <div className="absolute right-5 mx-2 flex items-center gap-x-2 py-8 -top-2 border-6 ">
-        <AiOutlineDelete />
-        <p>delete</p>
+        {( (selected.length > 0) && (
+          <div onClick={()=>{
+            for (let i = 0; i < selected.length; i++) {
+              const {commentId} = selected[i];
+
+              deleteCommentFromFireStore(commentId)
+              
+            }
+          }}>
+            <AiOutlineDelete />
+            <p>delete</p>
+          </div>
+        ))}
         <Input
           icon={<BsSearch size="1rem" />}
           placeholder="Search"

@@ -1,7 +1,8 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
-import { getFirestore } from "firebase/firestore";
+import { deleteDoc, doc, getFirestore } from "firebase/firestore";
+import { toast } from "react-toastify";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -29,3 +30,16 @@ export const getFirebase = ()=>{
 export const getSavedFireStore = ()=>{
     return firestore;
 };
+
+export const deleteCommentFromFireStore = async (commentId)=>{
+  // console.log(commentId);
+  await deleteDoc(doc(
+    firestore,
+    "comments",
+    `collection-${1}-movie-${1}`,
+    "contents",
+    commentId
+  ));
+
+  toast.success("Comment deleted");
+}

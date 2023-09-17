@@ -20,6 +20,7 @@ import { getToken } from "../../redux/storage";
 import { useSelector } from "react-redux";
 import stat from "../../redux/reducers/stat";
 import moment from "moment";
+import { deleteCommentFromFireStore } from "../../functions/firebase";
 
 export const inputStyles = {
   borderRadius: " 4.684px",
@@ -314,7 +315,7 @@ const AdminDashboard = () => {
               </h4>
               <div className="space-y-4">
                 {comments.map(
-                  ({ dateCommented: id, dateCommented: time, user, comment: content }, index) => {
+                  ({ dateCommented: id, dateCommented: time, user, comment: content, commentId }, index) => {
                     if(index >= 4){
                       return null;
                     }
@@ -336,7 +337,9 @@ const AdminDashboard = () => {
                             <img src={replyIcon} alt="" />
                             <p className="text-[#8991A0] text-xs">Reply</p>
                           </button>
-                          <img src={deleteIcon} alt="" />
+                          <img onClick={()=>{
+                            deleteCommentFromFireStore(commentId)
+                          }} src={deleteIcon} alt="" />
                         </div>
                         {commentInputVisibility[id] && (
                           <div>

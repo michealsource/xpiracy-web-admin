@@ -64,6 +64,7 @@ const AdminLayouts = () => {
 
             tmp.push({
               ...comment,
+              commentId: doc.id,
               user: users.find((v) => v.id == comment.userId),
             });
           });
