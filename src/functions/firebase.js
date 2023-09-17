@@ -1,7 +1,7 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
-import { deleteDoc, doc, getFirestore } from "firebase/firestore";
+import { deleteDoc, doc, getFirestore, updateDoc } from "firebase/firestore";
 import { toast } from "react-toastify";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
@@ -42,4 +42,36 @@ export const deleteCommentFromFireStore = async (commentId)=>{
   ));
 
   toast.success("Comment deleted");
+}
+
+export const replyToACommentFireStore = async (commentObject, replyMessage)=>{
+  const replyObject = [
+    {
+      comment: replyMessage,
+      dateCommented: (new Date()).getTime(),
+      userId: 0,
+      user: {
+        first_name: "Xspiracy",
+        last_name: "Admin",
+        photo: "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fukrainian-bride.com%2Fuser%2Favatar%2F0%2F7%2FAdmin1_602d65a4c499c.png&f=1&nofb=1&ipt=35b1bd51c903cb974dfc295dc240b448c111f9ae42d93019f0cff6d22af37c9b&ipo=images"
+      }
+    }
+  ];
+
+  const newReplyObject = [
+    ...(commentObject?.replies || []),
+    ...replyObject
+  ];
+
+  await updateDoc(doc(
+    firestore,
+    "comments",
+    `collection-${1}-movie-${1}`,
+    "contents",
+    commentObject.commentId
+  ), {
+    replies: newReplyObject
+  });
+
+  toast.success("Comment replied");
 }

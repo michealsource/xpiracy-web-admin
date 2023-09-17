@@ -20,7 +20,7 @@ import { getToken } from "../../redux/storage";
 import { useSelector } from "react-redux";
 import stat from "../../redux/reducers/stat";
 import moment from "moment";
-import { deleteCommentFromFireStore } from "../../functions/firebase";
+import { deleteCommentFromFireStore, replyToACommentFireStore } from "../../functions/firebase";
 
 export const inputStyles = {
   borderRadius: " 4.684px",
@@ -130,6 +130,7 @@ const AdminDashboard = () => {
   const [payItShowerSelectedValue, setPayItShowerSelectedValue] = useState(0);
   const [topVideos, setTopVideos] = useState([]);
   const [topVideosMode, setTopVideosMode] = useState("randomExtendedInterview");
+  const [reply, setReply] = useState("");
 
   const toggleCommentInputVisibility = (index) => {
     const updatedVisibility = [...commentInputVisibility];
@@ -315,7 +316,7 @@ const AdminDashboard = () => {
               </h4>
               <div className="space-y-4">
                 {comments.map(
-                  ({ dateCommented: id, dateCommented: time, user, comment: content, commentId }, index) => {
+                  ({ dateCommented: id, dateCommented: time, user, comment: content, commentId, replies }, index) => {
                     if(index >= 4){
                       return null;
                     }
@@ -345,6 +346,8 @@ const AdminDashboard = () => {
                           <div>
                             <Input
                               placeholder="Type your comment here"
+                              value={reply}
+                              onChange={e=> setReply(e.target.value)}
                               rightSection={
                                 <div className="flex items-center mr-20 gap-x-2">
                                   <AiOutlineSmile
@@ -356,6 +359,14 @@ const AdminDashboard = () => {
                                     color="#F52F00"
                                     borderRadius="20px"
                                     padding="6px 12px"
+                                    onClick={()=>{
+                                      replyToACommentFireStore({
+                                        commentId,
+                                        replies: replies || []
+                                      }, reply);
+
+                                      setReply("");
+                                    }}
                                   />
                                 </div>
                               }
