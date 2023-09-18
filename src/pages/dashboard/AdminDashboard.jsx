@@ -143,15 +143,12 @@ const AdminDashboard = () => {
 
   useEffect(() => {
     const allData = (allCollectionData || {})[topVideosMode];
-
     let val = [];
-
     (allData || []).map((item, index) => {
       if (index < 4) {
         val.push(item);
       }
     });
-
     setTopVideos(val);
   }, [topVideosMode, allCollectionData]);
 
@@ -160,11 +157,7 @@ const AdminDashboard = () => {
     (statSelector?.stat?.payItForwardAllEntry || []).map((payit) => {
       const now = moment();
       const dateFromPay = moment(payit.createdAt);
-
       const tDiff = now.diff(dateFromPay, "days");
-
-      // console.log(tDiff)
-
       if (payItShowerSelected == 0) {
         val++;
       } else if (tDiff <= payItShowerSelected) {
@@ -174,8 +167,6 @@ const AdminDashboard = () => {
 
     setPayItShowerSelectedValue(val);
   }, [payItShowerSelected, statSelector.stat]);
-
-  console.log(allCollectionData);
 
   return (
     <div className="w-full py-16 px-7 ">
@@ -203,7 +194,7 @@ const AdminDashboard = () => {
                     ,
                     <span>
                       <img src={Sunshine} alt="" />
-                    </span>{" "}
+                    </span>
                   </h4>
                   <h4 className="text-3xl font-normal">
                     {authSelector?.userData?.admin?.first_name || "Seun"}!
@@ -316,7 +307,7 @@ const AdminDashboard = () => {
                       <div key={id} className="flex flex-col">
                         <div className="relative flex items-center justify-between pt-6">
                           <h2 className="text-5xl text-[#8C8C8C] font-bold absolute -left-4 -top-2 ">
-                            {idx+1}
+                            {idx + 1}
                           </h2>
                           <div className="flex items-center gap-x-2">
                             <img src={img} alt="" className="z-50 w-20 h-14" />

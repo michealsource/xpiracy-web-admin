@@ -12,7 +12,11 @@ import moment from "moment";
 import { useDispatch } from "react-redux";
 import { toast } from "react-toastify";
 import axiosClient from "../../api/axios";
-import { getAllCollectionDataAction, getCollectionAction } from "../../redux/actions/genericAction";
+import {
+  getAllCollectionDataAction,
+  getCollectionAction,
+} from "../../redux/actions/genericAction";
+import ConfirmationModal from "../../component/Modal/ConfirmationModal";
 
 const sortIcon = <BsArrowDownShort />;
 
@@ -146,54 +150,55 @@ export const inputStyles = {
   },
 };
 
-const MainVideo = ({allCollectionData, currentTab}) => {
+const MainVideo = ({ allCollectionData, currentTab }) => {
   const [isOpen, { toggle }] = useDisclosure();
   const dispatch = useDispatch();
-
+  const [opened, { open, close }] = useDisclosure(false);
   const [selected, setSelected] = useState([]);
   const [search, setsearch] = useState("");
   const [selectedRaw, setSelectedRaw] = useState([]);
   const [editingItem, setEditingItem] = useState(null);
 
   const [columnData, setColumnData] = useState([]);
+  const [selectedMainVideo, setSelectedMainVideo] = useState("");
 
-  useEffect(()=>{
-    console.log('reached 0', search)
-    if(search.length == 0){
+  useEffect(() => {
+    console.log("reached 0", search);
+    if (search.length == 0) {
       setColumnData(selectedRaw);
-    }else{
-      console.log('reached 1', search)
-      const data = selectedRaw.filter(item => {
-        return ( (item.video_name.toLowerCase()).includes(search.toLowerCase()) || (item.keyword.toLowerCase()).includes(search.toLowerCase()));
+    } else {
+      console.log("reached 1", search);
+      const data = selectedRaw.filter((item) => {
+        return (
+          item.video_name.toLowerCase().includes(search.toLowerCase()) ||
+          item.keyword.toLowerCase().includes(search.toLowerCase())
+        );
       });
 
       setColumnData(data);
     }
-  }, [search, currentTab, allCollectionData])
+  }, [search, currentTab, allCollectionData]);
 
-  useEffect(()=>{
-    console.log(currentTab)
-    if(currentTab == 'video'){
+  useEffect(() => {
+    console.log(currentTab);
+    if (currentTab == "video") {
       let _data = [];
-      (allCollectionData?.allCollections || []).map((coll)=>{
-        _data = [
-          ..._data,
-          ...(coll?.contents || [])
-        ];
+      (allCollectionData?.allCollections || []).map((coll) => {
+        _data = [..._data, ...(coll?.contents || [])];
       });
 
       setColumnData(_data);
       setSelectedRaw(_data);
-    }else{
+    } else {
       switch (currentTab) {
         case "interview":
           setColumnData(allCollectionData?.randomExtendedInterview);
           setSelectedRaw(allCollectionData?.randomExtendedInterview);
-          break ;
+          break;
         case "trailer":
           setColumnData(allCollectionData?.randomTrailer);
           setSelectedRaw(allCollectionData?.randomTrailer);
-          break ;
+          break;
         case "bts":
         default:
           setColumnData(allCollectionData?.randomBehindTheScene);
@@ -202,7 +207,11 @@ const MainVideo = ({allCollectionData, currentTab}) => {
       }
     }
   }, [currentTab, allCollectionData]);
-
+  const openConfirmationModal = () => {
+    setSelectedMainVideo();
+    open();
+    return;
+  };
   const columns = [
     {
       name: "Videos",
@@ -213,7 +222,12 @@ const MainVideo = ({allCollectionData, currentTab}) => {
       cell: (row) => (
         <div style={{ display: "flex", alignItems: "center" }}>
           <div className="py-5 pr-3">
-            <img src={row.coverImage} alt={row.title} width="120" height="120" />
+            <img
+              src={row.coverImage}
+              alt={row.title}
+              width="120"
+              height="120"
+            />
           </div>
           <div>
             <span style={{ marginLeft: "5px", fontWeight: "700" }}>
@@ -228,9 +242,7 @@ const MainVideo = ({allCollectionData, currentTab}) => {
       name: "Upload Date",
       // selector: "createdAt",
       sortable: true,
-      cell: (row) =>(
-        moment(row.createdAt).calendar()
-      )
+      cell: (row) => moment(row.createdAt).calendar(),
     },
     // {
     //   name: "Views",
@@ -245,42 +257,8 @@ const MainVideo = ({allCollectionData, currentTab}) => {
     {
       // selector: "iconOne",
       cell: (row) => (
-        <button onClick={()=> {
-
-          let type = "content";
-            switch (currentTab) {
-              case "video":
-                type = "content";
-                break;
-              case "interview":
-                type = "extended_interview";
-                break;
-              case "trailer":
-                type = "trailers";
-                break;
-                
-              case "bts":
-                type = "behind_the_scene";
-                break;
-            
-              default:
-                type = "content";
-                break;
-            }
-
-            setEditingItem({...row, type: type}); 
-            toggle()
-          }} className="text-[#8991A0]">
-          {/* {row.iconOne} */}
-          <MdEdit size={20} />
-        </button>
-      ),
-    },
-    {
-      // selector: "iconTwo",
-      cell: (row)=> (
-        <div onClick={()=>{
-          (async()=>{
+        <button
+          onClick={() => {
             let type = "content";
             switch (currentTab) {
               case "video":
@@ -292,44 +270,84 @@ const MainVideo = ({allCollectionData, currentTab}) => {
               case "trailer":
                 type = "trailers";
                 break;
-                
+
               case "bts":
                 type = "behind_the_scene";
                 break;
-            
+
               default:
                 type = "content";
                 break;
             }
 
-            // let payload = {
-            //   id: row.id,
-            //   type
-            // }
+            setEditingItem({ ...row, type: type });
+            toggle();
+          }}
+          className="text-[#8991A0]"
+        >
+          {/* {row.iconOne} */}
+          <MdEdit size={20} />
+        </button>
+      ),
+    },
+    {
+      // selector: "iconTwo",
+      cell: (row) => (
+        <div
+          onClick={() => {
+            (async () => {
+              let type = "content";
+              switch (currentTab) {
+                case "video":
+                  type = "content";
+                  break;
+                case "interview":
+                  type = "extended_interview";
+                  break;
+                case "trailer":
+                  type = "trailers";
+                  break;
 
-            try {
-              await axiosClient().delete(`/admin/content?id=${row.id}&type=${type}`)
-              toast.success("deleted, reflecting");
-              dispatch(getAllCollectionDataAction());
-              dispatch(getCollectionAction());
-            } catch (error) {
-              console.log(error);
-              toast.error("an error occurred "+ error.message);
-            }
-          })();
-        }}>
-          <AiOutlineDelete size={20} />
+                case "bts":
+                  type = "behind_the_scene";
+                  break;
+
+                default:
+                  type = "content";
+                  break;
+              }
+
+              // let payload = {
+              //   id: row.id,
+              //   type
+              // }
+
+              try {
+                await axiosClient().delete(
+                  `/admin/content?id=${row.id}&type=${type}`
+                );
+                toast.success("deleted, reflecting");
+                dispatch(getAllCollectionDataAction());
+                dispatch(getCollectionAction());
+              } catch (error) {
+                console.log(error);
+                toast.error("an error occurred " + error.message);
+              }
+            })();
+          }}
+        >
+          <AiOutlineDelete size={20} onClick={openConfirmationModal} />
         </div>
-      )
+      ),
     },
   ];
   return (
     <div className="relative pt-20 table-container">
       <div className="fixed flex items-center py-8 mx-2 right-5 gap-x-2 -top-2 border-6">
-        {
-          (selected.length > 0) && (
-            <div onClick={()=>{
-              (async()=>{
+        {selected.length > 0 && (
+          <div
+            onClick={() => {
+              (async () => {
                 let type = "content";
                 switch (currentTab) {
                   case "video":
@@ -341,43 +359,46 @@ const MainVideo = ({allCollectionData, currentTab}) => {
                   case "trailer":
                     type = "trailers";
                     break;
-                    
+
                   case "bts":
                     type = "behind_the_scene";
                     break;
-                
+
                   default:
                     type = "content";
                     break;
                 }
-    
+
                 let payload = {
-                  ids: selected.map(item => item.id),
-                  type
-                }
-    
+                  ids: selected.map((item) => item.id),
+                  type,
+                };
+
                 try {
-                  await axiosClient().post(`/admin/content/bulkDelete`, payload)
+                  await axiosClient().post(
+                    `/admin/content/bulkDelete`,
+                    payload
+                  );
                   toast.success("deleted, reflecting");
                   dispatch(getAllCollectionDataAction());
                   dispatch(getCollectionAction());
                 } catch (error) {
                   console.log(error);
-                  toast.error("an error occurred "+ error.message);
+                  toast.error("an error occurred " + error.message);
                 }
               })();
-            }}>
-              <AiOutlineDelete />
-              <p>delete</p>
-            </div>
-          )
-        }
+            }}
+          >
+            <AiOutlineDelete />
+            <p>delete</p>
+          </div>
+        )}
         <Input
           icon={<BsSearch size="1rem" />}
           placeholder="Search"
           styles={{ input: inputStyles }}
           value={search}
-          onChange={(e)=> setsearch(e.target.value)}
+          onChange={(e) => setsearch(e.target.value)}
         />
       </div>
       {currentTab}
@@ -386,16 +407,26 @@ const MainVideo = ({allCollectionData, currentTab}) => {
           columns={columns}
           data={columnData}
           selectableRows
-          onSelectedRowsChange={({allSelected, selectedCount, selectedRows})=>{
+          onSelectedRowsChange={({
+            allSelected,
+            selectedCount,
+            selectedRows,
+          }) => {
             console.log(selectedRows);
-            setSelected(selectedRows)
+            setSelected(selectedRows);
           }}
           pagination
           sortIcon={sortIcon}
           customStyles={customStyles}
         />
       </div>
-      <VideoMetaModal editingItem={editingItem} isOpen={isOpen} onClose={toggle} />
+
+      <VideoMetaModal
+        editingItem={editingItem}
+        isOpen={isOpen}
+        onClose={toggle}
+      />
+      {opened && <ConfirmationModal isOpen={opened} onClose={close} />}
     </div>
   );
 };

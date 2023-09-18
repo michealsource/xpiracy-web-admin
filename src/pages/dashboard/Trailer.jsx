@@ -7,6 +7,7 @@ import { MdEdit } from "react-icons/md";
 import { BsArrowDownShort } from "react-icons/bs";
 import VideoMetaModal from "../../component/Modal/VideoMetaModal";
 import { useDisclosure } from "@mantine/hooks";
+import ConfirmationModal from "../../component/Modal/ConfirmationModal";
 
 const sortIcon = <BsArrowDownShort />;
 
@@ -208,6 +209,7 @@ const Trailer = ({allCollectionData}) => {
         />
       </div>
       <VideoMetaModal isOpen={isOpen} onClose={toggle} />
+      {opened && <ConfirmationModal isOpen={opened} onClose={close} />}
     </div>
   );
 };
