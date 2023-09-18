@@ -58,7 +58,7 @@ const VideosScreen = () => {
 
   return (
     <>
-      <div className="cp_container h-auto w-full">
+      <div className="w-full h-auto cp_container">
         <div className="px-4 py-2 my-4 md:px-12 md:py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-x-4">

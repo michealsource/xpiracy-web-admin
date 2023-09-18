@@ -10,6 +10,7 @@ import { useSelector } from "react-redux";
 import moment from "moment";
 import { useEffect, useState } from "react";
 import { deleteCommentFromFireStore } from "../../../functions/firebase";
+import ConfirmationModal from "../../../component/Modal/ConfirmationModal";
 
 const sortIcon = <BsArrowDownShort />;
 
@@ -64,7 +65,6 @@ const customStyles = {
     },
   },
 };
-
 
 const data = [
   {
@@ -147,27 +147,47 @@ const data = [
   },
 ];
 
-const All = ({search, selected, setSelected}) => {
+const All = ({ search, selected, setSelected }) => {
   const [isOpen, { toggle }] = useDisclosure();
-  const {allCollectionData, comments, commentUsers} = useSelector(_ => _.genericSlice)
+  const { allCollectionData, comments, commentUsers } = useSelector(
+    (_) => _.genericSlice
+  );
 
   const [commentData, setCommentData] = useState([]);
   const [activeComment, setActiveComment] = useState({});
 
-  useEffect(()=>{
-    setCommentData(comments)
+  const [opened, { open, close }] = useDisclosure(false);
+  const [selectedComment, setSelectedComment] = useState("");
+
+  console.log(commentUsers, allCollectionData);
+
+  useEffect(() => {
+    setCommentData(comments);
   }, [comments]);
 
-  useEffect(()=>{
+  useEffect(() => {
     console.log(search);
-    if(search == ""){
+    if (search == "") {
       setCommentData(comments);
-    }else{
-      setCommentData(comments.filter(comment => {
-        return (comment.comment.toLowerCase().includes(search.toLowerCase()));
-      }));
+    } else {
+      setCommentData(
+        comments.filter((comment) => {
+          return comment.comment.toLowerCase().includes(search.toLowerCase());
+        })
+      );
     }
-  }, [search, comments])
+  }, [search, comments]);
+
+  const deleteComment = () => {
+    deleteCommentFromFireStore(selectedComment);
+    return;
+  };
+
+  const openConfirmationModal = (commentId) => {
+    setSelectedComment(commentId);
+    open();
+    return;
+  };
 
   const columns = [
     {
@@ -179,10 +199,17 @@ const All = ({search, selected, setSelected}) => {
       cell: (row) => (
         <div style={{ display: "flex", alignItems: "center" }}>
           <div className="py-5 ">
-            <img src={row.user?.photo || smallAvatar} alt={""} width="20" height="20" />
+            <img
+              src={row.user?.photo || smallAvatar}
+              alt={""}
+              width="20"
+              height="20"
+            />
           </div>
           <div>
-            <span style={{ marginLeft: "5px" }}>{row.user?.first_name} {row.user?.last_name}</span>
+            <span style={{ marginLeft: "5px" }}>
+              {row.user?.first_name} {row.user?.last_name}
+            </span>
           </div>
         </div>
       ),
@@ -191,15 +218,17 @@ const All = ({search, selected, setSelected}) => {
       name: "Comment",
       // selector: "comment",
       sortable: true,
-      cell: (row) =>
-        (<div style={{ 
-          paddingTop: 7,
-          paddingBottom: 7,
-          height: 100,
-         }}>
+      cell: (row) => (
+        <div
+          style={{
+            paddingTop: 7,
+            paddingBottom: 7,
+            height: 100,
+          }}
+        >
           {row.comment}
-        </div>)
-      
+        </div>
+      ),
     },
     // {
     //   name: "Video",
@@ -210,9 +239,7 @@ const All = ({search, selected, setSelected}) => {
       name: "Date",
       // selector: "date",
       sortable: true,
-      cell: (row) => (
-        <div>{moment(row.dateCommented).calendar()}</div>
-      )
+      cell: (row) => <div>{moment(row.dateCommented).calendar()}</div>,
     },
     // {
     //   selector: "iconOne",
@@ -227,10 +254,13 @@ const All = ({search, selected, setSelected}) => {
       selector: "reply",
       width: "5%",
       cell: (row) => (
-        <button onClick={()=> {
-          setActiveComment(row);
-          toggle()
-          }} className="text-[#8991A0]">
+        <button
+          onClick={() => {
+            setActiveComment(row);
+            toggle();
+          }}
+          className="text-[#8991A0]"
+        >
           Reply
         </button>
       ),
@@ -238,11 +268,13 @@ const All = ({search, selected, setSelected}) => {
     {
       // selector: "iconTwo",
       width: "5%",
-      cell: (row)=>(
-        <AiOutlineDelete onClick={()=>{
-          deleteCommentFromFireStore(row.commentId)
-        }} size={16} />
-      )
+      cell: (row) => (
+        <AiOutlineDelete
+          onClick={() => openConfirmationModal(row.commentId)}
+          size={16}
+          className="cursor-pointer"
+        />
+      ),
     },
   ];
 
@@ -255,14 +287,26 @@ const All = ({search, selected, setSelected}) => {
           data={commentData}
           selectableRows
           pagination
-          onSelectedRowsChange={({selectedRows})=>{
+          onSelectedRowsChange={({ selectedRows }) => {
             setSelected(selectedRows);
           }}
           sortIcon={sortIcon}
           customStyles={customStyles}
         />
       </div>
-      <TestModal activeComment={activeComment} isOpen={isOpen} onClose={toggle} />
+      {opened && (
+        <ConfirmationModal
+          isOpen={opened}
+          onClose={close}
+          onAccept={deleteComment}
+          title=" Are you sure you want to delete this comment?"
+        />
+      )}
+      <TestModal
+        activeComment={activeComment}
+        isOpen={isOpen}
+        onClose={toggle}
+      />
     </div>
   );
 };

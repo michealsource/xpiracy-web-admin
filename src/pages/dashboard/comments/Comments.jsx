@@ -43,25 +43,29 @@ const Comment = () => {
   const [currentTab, setCurrentTab] = useState("comment");
   const [search, setSearch] = useState("");
   const [selected, setSelected] = useState([]);
-  const {comments} = useSelector(_ => _.genericSlice)
+  const { comments } = useSelector((_) => _.genericSlice);
 
   const updateCommentTabData = useMemo(() => {
     switch (currentTab) {
       case "all":
-        return <All search={search} selected={selected} setSelected={setSelected} />;
+        return (
+          <All search={search} selected={selected} setSelected={setSelected} />
+        );
       case "read":
         return <Read />;
       case "unread":
         return <Unread />;
 
       default:
-        return <All search={search} selected={selected} setSelected={setSelected} />;
+        return (
+          <All search={search} selected={selected} setSelected={setSelected} />
+        );
     }
   }, [currentTab, search, comments, selected]);
 
   return (
-    <div className="comment-table-container  my-20 mx-10">
-      <div className="px-4 space-y-2 md:px-12 py-2">
+    <div className="mx-10 my-20 comment-table-container">
+      <div className="px-4 py-2 space-y-2 md:px-12">
         <h4 className="">Comments</h4>
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-x-4">
@@ -80,26 +84,27 @@ const Comment = () => {
         </div>
       </div>
       <div className="px-4 my-4 md:px-12">{updateCommentTabData}</div>
-      <div className="absolute right-5 mx-2 flex items-center gap-x-2 py-8 -top-2 border-6 ">
-        {( (selected.length > 0) && (
-          <div onClick={()=>{
-            for (let i = 0; i < selected.length; i++) {
-              const {commentId} = selected[i];
+      <div className="absolute flex items-center px-8 py-8 mx-2 right-5 gap-x-2 -top-2 border-6">
+        {selected.length > 0 && (
+          <div
+            onClick={() => {
+              for (let i = 0; i < selected.length; i++) {
+                const { commentId } = selected[i];
 
-              deleteCommentFromFireStore(commentId)
-              
-            }
-          }}>
+                deleteCommentFromFireStore(commentId);
+              }
+            }}
+          >
             <AiOutlineDelete />
             <p>delete</p>
           </div>
-        ))}
+        )}
         <Input
           icon={<BsSearch size="1rem" />}
           placeholder="Search"
           styles={{ input: inputStyles }}
           value={search}
-          onChange={e => setSearch(e.target.value)}
+          onChange={(e) => setSearch(e.target.value)}
         />
       </div>
     </div>

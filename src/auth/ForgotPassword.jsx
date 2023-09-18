@@ -3,7 +3,8 @@ import CustomButton from "../component/button";
 
 const ForgotPassword = () => {
   return (
-    <div className="w-full h-screen bg-center bg-no-repeat bg-cover cp-admin-container bg-auth-bg ">
+    <div className="w-full h-screen mx-auto  text-[#fff]  ">
+      <div className="bg-center bg-no-repeat bg-cover bg-auth-bg">
       <div className="relative items-center py-10 auth-container md:flex md:mx-auto md:w-8/12 md:justify-between md:flex-row">
         {/* Text Section */}
         <div className="text-center md:text-left  pt-[8rem] space-y-8">
@@ -46,6 +47,8 @@ const ForgotPassword = () => {
           </div>
         </div>
       </div>
+      </div>
+     
     </div>
   );
 };

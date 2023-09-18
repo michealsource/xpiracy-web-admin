@@ -168,8 +168,8 @@ const Users = () => {
 
       cell: (row) => (
         <div style={{ display: "flex", alignItems: "center" }}>
-          <div className="py-5 ">
-            <img src={row.photo} alt={row.first_name} width="20" height="20" />
+          <div className="p-1 border-4 border-red-500 rounded-full">
+            <img src={row.photo} alt={row.first_name} className="w-4 h-4" />
           </div>
           <div>
             <span style={{ marginLeft: "5px" }}>{row.first_name} {row.last_name}</span>
@@ -200,7 +200,7 @@ const Users = () => {
               dispatch(getUsersAction());
               toast.success("deleted successfully");
             })()
-          }} size={16} />
+          }} size={20} />
         </div>
       )
     },

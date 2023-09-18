@@ -324,8 +324,8 @@ const MainVideo = ({allCollectionData, currentTab}) => {
     },
   ];
   return (
-    <div className="table-container pt-20 relative">
-      <div className="fixed right-5 mx-2 flex items-center gap-x-2 py-8 -top-2 border-6">
+    <div className="relative pt-20 table-container">
+      <div className="fixed flex items-center py-8 mx-2 right-5 gap-x-2 -top-2 border-6">
         {
           (selected.length > 0) && (
             <div onClick={()=>{

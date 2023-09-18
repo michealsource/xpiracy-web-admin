@@ -186,10 +186,11 @@ const Trailer = ({allCollectionData}) => {
   ];
 
   return (
-    <div className="table-container pt-20 cp-admin-container">
-      <div className="absolute right-5 mx-2 flex items-center gap-x-2 py-8 -top-2 border-6 ">
+    <div className="pt-20 table-container cp-admin-container">
+      <div className="absolute flex items-center py-8 mx-2 right-5 gap-x-2 -top-2 border-6 ">
         <AiOutlineDelete />
         <p>delete</p>
+   
         <Input
           icon={<BsSearch size="1rem" />}
           placeholder="Search"
