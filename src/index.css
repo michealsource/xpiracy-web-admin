@@ -139,7 +139,14 @@
 }
 
 .bg-local-image {
-  background-image: url("./assets/png/auth-bg-img.png"); /* Adjust the path to your image file */
+  background-image: url("./assets/png/auth-bg-img.png");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.signin-container {
+  background-image: url("./assets/png/dashboard-bg.png");
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
