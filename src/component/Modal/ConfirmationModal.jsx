@@ -20,7 +20,7 @@ export const inputContainerStyle = {
   background: "rgba(255, 255, 255, 0.18)",
 };
 
-const ConfirmationModal = ({ isOpen, onClose, onAccept, title }) => {
+const ConfirmationModal = ({ isOpen, onClose, onAccept, title, selectedMainVideo }) => {
   return (
     <Modal
       withCloseButton={false}

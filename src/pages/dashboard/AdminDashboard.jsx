@@ -15,12 +15,13 @@ import { useDisclosure } from "@mantine/hooks";
 
 import { Link } from "react-router-dom";
 import UploadNewVideoModal from "../../component/Modal/UploadNewVideoModal";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import moment from "moment";
 import {
   deleteCommentFromFireStore,
   replyToACommentFireStore,
 } from "../../functions/firebase";
+import { setAppLoader } from "../../redux/reducers/generic";
 
 export const inputStyles = {
   borderRadius: " 4.684px",
@@ -120,6 +121,7 @@ const AdminDashboard = () => {
     new Array(commentData.length).fill(false)
   );
 
+  const dispatch = useDispatch();
   const authSelector = useSelector((_) => _.authenticationSlice);
   const statSelector = useSelector((_) => _.statSlice);
   const { allCollectionData, comments, commentUsers } = useSelector(
@@ -374,7 +376,16 @@ const AdminDashboard = () => {
                           </button>
                           <img
                             onClick={() => {
-                              deleteCommentFromFireStore(commentId);
+                              (async()=>{
+                                dispatch(setAppLoader(true));
+                                try {
+                                  await deleteCommentFromFireStore(commentId);
+                                } catch (error) {
+                                  
+                                }
+                                
+                                dispatch(setAppLoader(false));
+                              })()
                             }}
                             src={deleteIcon}
                             alt=""

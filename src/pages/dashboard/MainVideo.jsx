@@ -17,6 +17,7 @@ import {
   getCollectionAction,
 } from "../../redux/actions/genericAction";
 import ConfirmationModal from "../../component/Modal/ConfirmationModal";
+import { setAppLoader } from "../../redux/reducers/generic";
 
 const sortIcon = <BsArrowDownShort />;
 
@@ -160,7 +161,7 @@ const MainVideo = ({ allCollectionData, currentTab }) => {
   const [editingItem, setEditingItem] = useState(null);
 
   const [columnData, setColumnData] = useState([]);
-  const [selectedMainVideo, setSelectedMainVideo] = useState("");
+  const [selectedMainVideo, setSelectedMainVideo] = useState({});
 
   useEffect(() => {
     console.log("reached 0", search);
@@ -207,8 +208,8 @@ const MainVideo = ({ allCollectionData, currentTab }) => {
       }
     }
   }, [currentTab, allCollectionData]);
-  const openConfirmationModal = () => {
-    setSelectedMainVideo();
+  const openConfirmationModal = (_data) => {
+    setSelectedMainVideo(_data);
     open();
     return;
   };
@@ -296,51 +297,99 @@ const MainVideo = ({ allCollectionData, currentTab }) => {
         <div
           onClick={() => {
             (async () => {
-              let type = "content";
-              switch (currentTab) {
-                case "video":
-                  type = "content";
-                  break;
-                case "interview":
-                  type = "extended_interview";
-                  break;
-                case "trailer":
-                  type = "trailers";
-                  break;
+              // let type = "content";
+              // switch (currentTab) {
+              //   case "video":
+              //     type = "content";
+              //     break;
+              //   case "interview":
+              //     type = "extended_interview";
+              //     break;
+              //   case "trailer":
+              //     type = "trailers";
+              //     break;
 
-                case "bts":
-                  type = "behind_the_scene";
-                  break;
+              //   case "bts":
+              //     type = "behind_the_scene";
+              //     break;
 
-                default:
-                  type = "content";
-                  break;
-              }
-
-              // let payload = {
-              //   id: row.id,
-              //   type
+              //   default:
+              //     type = "content";
+              //     break;
               // }
 
-              try {
-                await axiosClient().delete(
-                  `/admin/content?id=${row.id}&type=${type}`
-                );
-                toast.success("deleted, reflecting");
-                dispatch(getAllCollectionDataAction());
-                dispatch(getCollectionAction());
-              } catch (error) {
-                console.log(error);
-                toast.error("an error occurred " + error.message);
-              }
+              // // let payload = {
+              // //   id: row.id,
+              // //   type
+              // // }
+
+              // try {
+              //   dispatch(setAppLoader(true));
+              //   await axiosClient().delete(
+              //     `/admin/content?id=${row.id}&type=${type}`
+              //   );
+              //   toast.success("deleted, reflecting");
+              //   dispatch(setAppLoader(false));
+              //   dispatch(getAllCollectionDataAction());
+              //   dispatch(getCollectionAction());
+              // } catch (error) {
+              //   console.log(error);
+              //   toast.error("an error occurred " + error.message);
+              // }
             })();
           }}
         >
-          <AiOutlineDelete size={20} onClick={openConfirmationModal} />
+          <AiOutlineDelete size={20} onClick={()=>openConfirmationModal({
+            row,
+            currentTab
+          })} />
         </div>
       ),
     },
   ];
+
+  const deleteNow = async ()=>{
+    let type = "content";
+    switch (selectedMainVideo?.currentTab) {
+      case "video":
+        type = "content";
+        break;
+      case "interview":
+        type = "extended_interview";
+        break;
+      case "trailer":
+        type = "trailers";
+        break;
+
+      case "bts":
+        type = "behind_the_scene";
+        break;
+
+      default:
+        type = "content";
+        break;
+    }
+
+    // let payload = {
+    //   id: row.id,
+    //   type
+    // }
+
+    try {
+      dispatch(setAppLoader(true));
+      await axiosClient().delete(
+        `/admin/content?id=${selectedMainVideo?.row?.id}&type=${type}`
+      );
+      toast.success("deleted, reflecting");
+      dispatch(getAllCollectionDataAction());
+      dispatch(getCollectionAction());
+    } catch (error) {
+      console.log(error);
+      toast.error("an error occurred " + error.message);
+    }
+
+    dispatch(setAppLoader(false));
+  }
   return (
     <div className="relative pt-20 table-container">
       <div className="fixed flex items-center py-8 mx-2 right-5 gap-x-2 -top-2 border-6">
@@ -426,7 +475,7 @@ const MainVideo = ({ allCollectionData, currentTab }) => {
         isOpen={isOpen}
         onClose={toggle}
       />
-      {opened && <ConfirmationModal isOpen={opened} onClose={close} />}
+      {opened && <ConfirmationModal selectedMainVideo={selectedMainVideo} isOpen={opened} onClose={close} onAccept={deleteNow} />}
     </div>
   );
 };

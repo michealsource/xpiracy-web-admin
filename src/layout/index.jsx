@@ -4,7 +4,7 @@ import Sidebar from "../component/sidebar";
 import Navbar from "../component/navigations/Navbar";
 import { useEffect, useState } from "react";
 import { getToken } from "../redux/storage";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { statAction } from "../redux/actions/statAction";
 import {
   getAllCollectionDataAction,
@@ -25,10 +25,15 @@ import {
   query,
 } from "firebase/firestore";
 import { setCommentsRecords } from "../redux/reducers/generic";
+import Loader from "../component/loader/loader";
 
 const AdminLayouts = () => {
   const dispatch = useDispatch();
   const [tmpUser, setTmpUser] = useState([]);
+  const genericSlice = useSelector(_ => _.genericSlice);
+  const { appLoader } = useSelector(_ => _.genericSlice);
+
+  console.log("appLoader", appLoader, genericSlice)
 
   useEffect(() => {
     if (!getToken()) {
@@ -97,6 +102,7 @@ const AdminLayouts = () => {
   return (
     <>
       <div className="bg-[#151515] text-[#fff] flex items-start gap-x-20 w-full min-h-[100vh] h-auto py-4 pr-4">
+        {appLoader && <Loader />}
         <Sidebar />
         <div className="w-full bg-center bg-no-repeat bg-cover bg-dsh-bg rounded-2xl ">
           <Navbar />

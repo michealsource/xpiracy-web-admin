@@ -36,12 +36,16 @@ const initialState = {
   communityPeopleWatching: [],
   commentUsers: [],
   comments: [],
+  appLoader: false
 };
 
 const genericSlice = createSlice({
   name: "authentication",
   initialState,
   reducers: {
+    setAppLoader(state, payload) {
+      state.appLoader = payload.payload;
+    },
     clearGenreStatus(state) {
       state.genreStatus = "idle";
       state.genreSuccess = "";
@@ -183,7 +187,8 @@ export const {
     clearGenreStatus,
     clearPlacementStatus,
     clearCollectionStatus,
-    setCommentsRecords
+    setCommentsRecords,
+    setAppLoader
 } = genericSlice.actions;
 
 export default genericSlice.reducer;

@@ -6,11 +6,12 @@ import { smallAvatar } from "../../../assets/svg";
 import { useDisclosure } from "@mantine/hooks";
 // import ReplyModal from "../../../component/Modal/ReplyModal";
 import TestModal from "../../../component/Modal/TestModal";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import moment from "moment";
 import { useEffect, useState } from "react";
 import { deleteCommentFromFireStore } from "../../../functions/firebase";
 import ConfirmationModal from "../../../component/Modal/ConfirmationModal";
+import { setAppLoader } from "../../../redux/reducers/generic";
 
 const sortIcon = <BsArrowDownShort />;
 
@@ -158,6 +159,7 @@ const All = ({ search, selected, setSelected }) => {
 
   const [opened, { open, close }] = useDisclosure(false);
   const [selectedComment, setSelectedComment] = useState("");
+  const dispatch = useDispatch();
 
   console.log(commentUsers, allCollectionData);
 
@@ -178,8 +180,15 @@ const All = ({ search, selected, setSelected }) => {
     }
   }, [search, comments]);
 
-  const deleteComment = () => {
-    deleteCommentFromFireStore(selectedComment);
+  const deleteComment =async () => {
+    dispatch(setAppLoader(true));
+    try {
+      await deleteCommentFromFireStore(selectedComment);
+    } catch (error) {
+      
+    }
+    dispatch(setAppLoader(false));
+
     return;
   };
 
