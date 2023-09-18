@@ -189,8 +189,17 @@ const All = ({search, selected, setSelected}) => {
     },
     {
       name: "Comment",
-      selector: "comment",
+      // selector: "comment",
       sortable: true,
+      cell: (row) =>
+        (<div style={{ 
+          paddingTop: 7,
+          paddingBottom: 7,
+          height: 100,
+         }}>
+          {row.comment}
+        </div>)
+      
     },
     // {
     //   name: "Video",
