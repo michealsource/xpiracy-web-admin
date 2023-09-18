@@ -78,7 +78,7 @@ const SignIn = () => {
             </div>
           </div>
           <div className="flex flex-col items-start justify-center w-full px-12 signin-container">
-            <h4 className="text-4xl">Sign in</h4>
+            <h4 className="text-4xl">Sign In</h4>
             <form
               onSubmit={() => {
                 return false;
