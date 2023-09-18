@@ -1,6 +1,7 @@
 import { Checkbox } from "@mantine/core";
-import { CrownJesus } from "../assets/png";
+
 import CustomButton from "../component/button";
+import CrownJesus from "../assets/png/crown-jesus.png";
 
 import FormInput from "../component/input/FormInput";
 import { useEffect, useState } from "react";
@@ -13,12 +14,6 @@ import Loader from "../component/loader/loader";
 import { signInAction } from "../redux/actions/authenticationAction";
 
 const SignIn = () => {
-  const [isLoginOpen, setIsLoginOpen] = useState(true);
-  const [inputs, setInputs] = useState({
-    email: "",
-    password: "",
-  });
-
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const authenticationSlice = useSelector((_) => _.authenticationSlice);
@@ -59,7 +54,7 @@ const SignIn = () => {
 
   return (
     <div className=" w-full mx-auto text-[#fff]  ">
-      <div className="h-screen bg-center bg-no-repeat bg-cover bg-auth-bg">
+      <div className="h-screen bg-center bg-no-repeat bg-cover bg-local-image">
         {loading && <Loader />}
         <div className="relative flex flex-col items-center justify-between w-9/12 py-10 mx-auto md:flex-row gap-x-20">
           <div className="text-center md:text-left w-full md:w-1/2 pt-[10rem] space-y-3">

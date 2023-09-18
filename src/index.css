@@ -8,7 +8,6 @@
   color: white;
   background: rgba(60, 60, 60, 1) !important;
   border-radius: 20px;
-  
 }
 .mantine-Modal-header {
   background: none !important;
@@ -137,4 +136,11 @@
     height: 4px;
     background-color: #f52f00;
   }
+}
+
+.bg-local-image {
+  background-image: url("./assets/png/auth-bg-img.png"); /* Adjust the path to your image file */
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
 }
