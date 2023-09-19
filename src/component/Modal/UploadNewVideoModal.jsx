@@ -4,7 +4,7 @@ import PropTypes from "prop-types";
 import { uploadIconOrange } from "../../assets/svg";
 import { useDisclosure } from "@mantine/hooks";
 import VideoMetaModal from "./VideoMetaModal";
-import { useDropzone } from 'react-dropzone';
+import { useDropzone } from "react-dropzone";
 import { useCallback, useState } from "react";
 import { toast } from "react-toastify";
 
@@ -12,24 +12,21 @@ const UploadNewVideoModal = ({ isOpen, onClose }) => {
   const [opened, { open, close }] = useDisclosure();
   const [mediaFile, setMediaFile] = useState(null);
 
-  const onDrop = useCallback(acceptedFiles => {
+  const onDrop = useCallback((acceptedFiles) => {
     const file = acceptedFiles[0];
 
     // check type
-    if(!(file.type.includes("video"))){
-      toast.error("Media type not allowed")
-      return ;
+    if (!file.type.includes("video")) {
+      toast.error("Media type not allowed");
+      return;
     }
 
     setMediaFile(file);
+    onClose();
     open();
-
   }, []);
 
-  const {
-    getRootProps,
-    getInputProps
-  } = useDropzone({
+  const { getRootProps, getInputProps } = useDropzone({
     onDrop,
     accept: "video/*",
     multiple: false,
@@ -54,7 +51,7 @@ const UploadNewVideoModal = ({ isOpen, onClose }) => {
                 <button
                   className="underline text-[#F52F00] "
                   // onClick={open}
-                  >
+                >
                   Browse
                 </button>
               </h6>

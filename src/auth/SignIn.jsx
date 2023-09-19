@@ -120,7 +120,7 @@ const SignIn = () => {
                     <Checkbox color="dark" />
                     <p>Remember me</p>
                   </div>
-                  <p>Forgot Password?</p>
+                  {/* <p>Forgot Password?</p> */}
                 </div>
               </div>
             </form>

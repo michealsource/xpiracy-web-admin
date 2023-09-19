@@ -12,23 +12,23 @@ import { toast } from "react-toastify";
 const AccountDetails = () => {
   const [isOpen, { toggle }] = useDisclosure();
 
-  const authSelector = useSelector(_ => _.authenticationSlice);
+  const authSelector = useSelector((_) => _.authenticationSlice);
 
-  const adminData = (authSelector?.userData?.admin || {})
+  const adminData = authSelector?.userData?.admin || {};
 
   const dispatch = useDispatch();
 
   const [formData, setFormData] = useState({
     firstName: adminData?.first_name || "",
-    lastName: adminData?.last_name|| "",
+    lastName: adminData?.last_name || "",
   });
 
-  useEffect(()=>{
+  useEffect(() => {
     setFormData({
       firstName: adminData?.first_name || "",
-      lastName: adminData?.last_name|| "",
-    })
-  }, [adminData])
+      lastName: adminData?.last_name || "",
+    });
+  }, [adminData]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -38,7 +38,7 @@ const AccountDetails = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    (async()=>{
+    (async () => {
       await axiosClient().patch("/admin/my", {
         first_name: formData.firstName,
         last_name: formData.lastName,
@@ -100,7 +100,7 @@ const AccountDetails = () => {
             </div>
             <div className="flex items-center gap-x-6">
               <CustomButton
-                title="Click Here"
+                title="Update"
                 color="#F52F00"
                 width="10%"
                 padding="16.293px 0px 16.844px 0px"

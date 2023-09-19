@@ -4,11 +4,11 @@ import PropTypes from "prop-types";
 import { congratulationsImg } from "../../assets/svg";
 import CustomButton from "../button";
 
-const CongratulationsModal = ({ isOpen, onClose }) => {
+const CongratulationsModal = ({ OpenTwo, onClose }) => {
   return (
     <Modal
       withCloseButton
-      opened={isOpen}
+      opened={OpenTwo}
       onClose={onClose}
       size="100%"
       centered
@@ -30,6 +30,7 @@ const CongratulationsModal = ({ isOpen, onClose }) => {
             <h6 className="pb-4 text-3xl">been published</h6>
             <div>
               <CustomButton
+                onClick={onClose}
                 title="Finish"
                 color="#F52F00"
                 padding="12px 20px"

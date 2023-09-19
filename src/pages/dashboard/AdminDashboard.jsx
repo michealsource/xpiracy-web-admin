@@ -128,8 +128,6 @@ const AdminDashboard = () => {
     (_) => _.genericSlice
   );
 
-  console.log(comments, commentUsers, "data");
-
   const [payItShowerSelected, setPayItShowerSelected] = useState(30);
   const [payItShowerSelectedValue, setPayItShowerSelectedValue] = useState(0);
   const [topVideos, setTopVideos] = useState([]);
@@ -376,16 +374,14 @@ const AdminDashboard = () => {
                           </button>
                           <img
                             onClick={() => {
-                              (async()=>{
+                              (async () => {
                                 dispatch(setAppLoader(true));
                                 try {
                                   await deleteCommentFromFireStore(commentId);
-                                } catch (error) {
-                                  
-                                }
-                                
+                                } catch (error) {}
+
                                 dispatch(setAppLoader(false));
-                              })()
+                              })();
                             }}
                             src={deleteIcon}
                             alt=""

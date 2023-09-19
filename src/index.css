@@ -54,7 +54,7 @@
     @apply container px-2 py-2 mx-auto bg-[#0C0C0C] text-[#fff];
   }
   .signin-container {
-    @apply w-[100%] lg:w-[550px] h-[630px] mx-2 rounded-lg p-8 bg-dsh-bg;
+    @apply w-[100%] lg:w-[550px] h-[500px] mx-2 rounded-lg p-8 bg-dsh-bg;
     /* border: 1px solid rgb(91, 56, 23); */
     border-radius: 28px;
     /* background: rgba(15, 9, 12, 0.56); */

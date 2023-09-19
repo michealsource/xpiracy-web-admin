@@ -67,87 +67,6 @@ const customStyles = {
   },
 };
 
-const data = [
-  {
-    id: 1,
-    title: "Thophila Mary",
-    content: "Lorem ipsum dolor sit amet Lorem  ",
-    img: smallAvatar,
-    date: "20 hours ago",
-    text: "Christpiracy",
-    views: "2",
-    comment: "300",
-    iconOne: <BsArrow90DegRight size={16} className="text-[#8991A0]" />,
-    reply: "Reply",
-    iconTwo: <AiOutlineDelete size={16} />,
-  },
-  {
-    id: 2,
-    title: "Thophila Mary",
-    content: "Lorem ipsum dolor sit amet Lorem  ",
-    text: "Christpiracy",
-    img: smallAvatar,
-    date: "20 hours ago",
-    views: "2",
-    comment: "300",
-    iconOne: <BsArrow90DegRight size={16} className="text-[#8991A0]" />,
-    reply: "Reply",
-    iconTwo: <AiOutlineDelete size={16} />,
-  },
-  {
-    id: 3,
-    title: "Thophila Mary",
-    content: "Lorem ipsum dolor sit amet Lorem ",
-    text: "Christpiracy",
-    img: smallAvatar,
-    date: "20 hours ago",
-    views: "2",
-    comment: "300",
-    iconOne: <BsArrow90DegRight size={16} className="text-[#8991A0]" />,
-    reply: "Reply",
-    iconTwo: <AiOutlineDelete size={16} />,
-  },
-  {
-    id: 4,
-    title: "Thophila Mary",
-    content: "Lorem ipsum dolor sit amet Lorem  ",
-    text: "Christpiracy",
-    img: smallAvatar,
-    date: "20 hours ago",
-    views: "2",
-    comment: "300",
-    iconOne: <BsArrow90DegRight size={16} className="text-[#8991A0]" />,
-    reply: "Reply",
-    iconTwo: <AiOutlineDelete size={16} />,
-  },
-  {
-    id: 5,
-    title: "Thophila Mary",
-    content: "Lorem ipsum dolor sit amet Lorem  ",
-    text: "Christpiracy",
-    img: smallAvatar,
-    date: "20 hours ago",
-    views: "2",
-    comment: "300",
-    iconOne: <BsArrow90DegRight size={16} className="text-[#8991A0]" />,
-    reply: "Reply",
-    iconTwo: <AiOutlineDelete size={16} />,
-  },
-  {
-    id: 6,
-    title: "Thophila Mary",
-    content: "Lorem ipsum dolor sit amet Lorem  ",
-    text: "Christpiracy",
-    img: smallAvatar,
-    date: "20 hours ago",
-    views: "2",
-    comment: "300",
-    iconOne: <BsArrow90DegRight size={16} className="text-[#8991A0]" />,
-    reply: "Reply",
-    iconTwo: <AiOutlineDelete size={16} />,
-  },
-];
-
 const All = ({ search, selected, setSelected }) => {
   const [isOpen, { toggle }] = useDisclosure();
   const { allCollectionData, comments, commentUsers } = useSelector(
@@ -180,13 +99,11 @@ const All = ({ search, selected, setSelected }) => {
     }
   }, [search, comments]);
 
-  const deleteComment =async () => {
+  const deleteComment = async () => {
     dispatch(setAppLoader(true));
     try {
       await deleteCommentFromFireStore(selectedComment);
-    } catch (error) {
-      
-    }
+    } catch (error) {}
     dispatch(setAppLoader(false));
 
     return;
@@ -225,7 +142,7 @@ const All = ({ search, selected, setSelected }) => {
     },
     {
       name: "Comment",
-      // selector: "comment",
+
       sortable: true,
       cell: (row) => (
         <div
@@ -239,26 +156,14 @@ const All = ({ search, selected, setSelected }) => {
         </div>
       ),
     },
-    // {
-    //   name: "Video",
-    //   selector: "text",
-    //   sortable: true,
-    // },
+
     {
       name: "Date",
       // selector: "date",
       sortable: true,
       cell: (row) => <div>{moment(row.dateCommented).calendar()}</div>,
     },
-    // {
-    //   selector: "iconOne",
-    //   width: "5%",
-    //   cell: (row) => (
-    //     <button onClick={toggle} className="text-[#8991A0]">
-    //       {row.iconOne}
-    //     </button>
-    //   ),
-    // },
+
     {
       selector: "reply",
       width: "5%",
@@ -275,7 +180,6 @@ const All = ({ search, selected, setSelected }) => {
       ),
     },
     {
-      // selector: "iconTwo",
       width: "5%",
       cell: (row) => (
         <AiOutlineDelete
@@ -289,7 +193,6 @@ const All = ({ search, selected, setSelected }) => {
 
   return (
     <div>
-      {/* {modalActive && <ReplyModal handleCloseModal={closeModal} />} */}
       <div>
         <DataTable
           columns={columns}

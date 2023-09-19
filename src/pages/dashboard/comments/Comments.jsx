@@ -10,21 +10,21 @@ import { deleteCommentFromFireStore } from "../../../functions/firebase";
 import { useSelector } from "react-redux";
 
 const commentTabs = [
-  // {
-  //   id: 0,
-  //   title: "All",
-  //   slug: "all",
-  // },
-  // {
-  //   id: 0,
-  //   title: "Read",
-  //   slug: "read",
-  // },
-  // {
-  //   id: 1,
-  //   title: "Unread",
-  //   slug: "unread",
-  // },
+  {
+    id: 0,
+    title: "All",
+    slug: "all",
+  },
+  {
+    id: 0,
+    title: "Read",
+    slug: "read",
+  },
+  {
+    id: 1,
+    title: "Unread",
+    slug: "unread",
+  },
 ];
 
 export const inputStyles = {
