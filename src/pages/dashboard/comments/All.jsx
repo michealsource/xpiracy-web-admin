@@ -67,7 +67,7 @@ const customStyles = {
   },
 };
 
-const All = ({ search, selected, setSelected }) => {
+const All = ({ search, selected, setSelected, currentTab = "All" }) => {
   const [isOpen, { toggle }] = useDisclosure();
   const { allCollectionData, comments, commentUsers } = useSelector(
     (_) => _.genericSlice
@@ -80,7 +80,31 @@ const All = ({ search, selected, setSelected }) => {
   const [selectedComment, setSelectedComment] = useState("");
   const dispatch = useDispatch();
 
-  console.log(commentUsers, allCollectionData);
+  
+  useEffect(() => {
+    console.log(currentTab, "currentTab");
+    if(currentTab.toLowerCase() == "all"){
+      setCommentData(comments);
+    }else if(currentTab.toLowerCase() == "read"){
+      // console.log(comments, "currentTab");
+      setCommentData((comments || []).filter(comm =>{
+        if(comm?.replies != undefined){
+          return (comm?.replies.length > 0)
+        }
+
+        return false;
+      }));
+    }else{
+      setCommentData((comments || []).filter(comm =>{
+        if(comm?.replies != undefined){
+          return (comm?.replies.length == 0)
+        }
+
+        return true;
+      }));
+
+    }
+  }, [currentTab]);
 
   useEffect(() => {
     setCommentData(comments);

@@ -40,25 +40,25 @@ export const inputStyles = {
 };
 
 const Comment = () => {
-  const [currentTab, setCurrentTab] = useState("comment");
+  const [currentTab, setCurrentTab] = useState("all");
   const [search, setSearch] = useState("");
   const [selected, setSelected] = useState([]);
   const { comments } = useSelector((_) => _.genericSlice);
 
   const updateCommentTabData = useMemo(() => {
     switch (currentTab) {
-      case "all":
-        return (
-          <All search={search} selected={selected} setSelected={setSelected} />
-        );
-      case "read":
-        return <Read />;
-      case "unread":
-        return <Unread />;
+      // case "all":
+      //   return (
+      //     <All search={search} selected={selected} setSelected={setSelected} />
+      //   );
+      // case "read":
+      //   return <Read />;
+      // case "unread":
+      //   return <Unread />;
 
       default:
         return (
-          <All search={search} selected={selected} setSelected={setSelected} />
+          <All currentTab={currentTab} search={search} selected={selected} setSelected={setSelected} />
         );
     }
   }, [currentTab, search, comments, selected]);
