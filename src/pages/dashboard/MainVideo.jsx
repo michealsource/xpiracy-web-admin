@@ -164,7 +164,6 @@ const MainVideo = ({ allCollectionData, currentTab }) => {
   const [selectedMainVideo, setSelectedMainVideo] = useState({});
 
   useEffect(() => {
-    console.log("reached 0", search);
     if (search.length == 0) {
       setColumnData(selectedRaw);
     } else {
@@ -226,15 +225,27 @@ const MainVideo = ({ allCollectionData, currentTab }) => {
             <img
               src={row.coverImage}
               alt={row.title}
-              width="120"
-              height="120"
+              width="100"
+              height="100"
+              className="rounded-lg"
             />
           </div>
           <div>
-            <span style={{ marginLeft: "5px", fontWeight: "700" }}>
+            <span
+              style={{
+                marginLeft: "10px",
+                fontWeight: "700",
+                fontSize: "16px",
+                color: "#BEBEBE",
+              }}
+            >
               {row.video_name}
             </span>
-            <p style={{ marginLeft: "5px", fontSize: "12px" }}>{row.keyword}</p>
+            <p
+              style={{ marginLeft: "10px", fontSize: "12px", color: "#BEBEBE" }}
+            >
+              {row.keyword}
+            </p>
           </div>
         </div>
       ),
@@ -245,16 +256,7 @@ const MainVideo = ({ allCollectionData, currentTab }) => {
       sortable: true,
       cell: (row) => moment(row.createdAt).calendar(),
     },
-    // {
-    //   name: "Views",
-    //   selector: "views",
-    //   sortable: true,
-    // },
-    // {
-    //   name: "Comment",
-    //   selector: "comment",
-    //   sortable: true,
-    // },
+
     {
       // selector: "iconOne",
       cell: (row) => (
@@ -296,59 +298,24 @@ const MainVideo = ({ allCollectionData, currentTab }) => {
       cell: (row) => (
         <div
           onClick={() => {
-            (async () => {
-              // let type = "content";
-              // switch (currentTab) {
-              //   case "video":
-              //     type = "content";
-              //     break;
-              //   case "interview":
-              //     type = "extended_interview";
-              //     break;
-              //   case "trailer":
-              //     type = "trailers";
-              //     break;
-
-              //   case "bts":
-              //     type = "behind_the_scene";
-              //     break;
-
-              //   default:
-              //     type = "content";
-              //     break;
-              // }
-
-              // // let payload = {
-              // //   id: row.id,
-              // //   type
-              // // }
-
-              // try {
-              //   dispatch(setAppLoader(true));
-              //   await axiosClient().delete(
-              //     `/admin/content?id=${row.id}&type=${type}`
-              //   );
-              //   toast.success("deleted, reflecting");
-              //   dispatch(setAppLoader(false));
-              //   dispatch(getAllCollectionDataAction());
-              //   dispatch(getCollectionAction());
-              // } catch (error) {
-              //   console.log(error);
-              //   toast.error("an error occurred " + error.message);
-              // }
-            })();
+            (async () => {})();
           }}
         >
-          <AiOutlineDelete size={20} onClick={()=>openConfirmationModal({
-            row,
-            currentTab
-          })} />
+          <AiOutlineDelete
+            size={20}
+            onClick={() =>
+              openConfirmationModal({
+                row,
+                currentTab,
+              })
+            }
+          />
         </div>
       ),
     },
   ];
 
-  const deleteNow = async ()=>{
+  const deleteNow = async () => {
     let type = "content";
     switch (selectedMainVideo?.currentTab) {
       case "video":
@@ -370,11 +337,6 @@ const MainVideo = ({ allCollectionData, currentTab }) => {
         break;
     }
 
-    // let payload = {
-    //   id: row.id,
-    //   type
-    // }
-
     try {
       dispatch(setAppLoader(true));
       await axiosClient().delete(
@@ -389,7 +351,7 @@ const MainVideo = ({ allCollectionData, currentTab }) => {
     }
 
     dispatch(setAppLoader(false));
-  }
+  };
   return (
     <div className="relative pt-20 table-container">
       <div className="fixed flex items-center py-8 mx-2 right-5 gap-x-2 -top-2 border-6">
@@ -450,7 +412,7 @@ const MainVideo = ({ allCollectionData, currentTab }) => {
           onChange={(e) => setsearch(e.target.value)}
         />
       </div>
-      {currentTab}
+      {/* {currentTab} */}
       <div>
         <DataTable
           columns={columns}
@@ -475,7 +437,15 @@ const MainVideo = ({ allCollectionData, currentTab }) => {
         isOpen={isOpen}
         onClose={toggle}
       />
-      {opened && <ConfirmationModal selectedMainVideo={selectedMainVideo} isOpen={opened} onClose={close} onAccept={deleteNow} />}
+      {opened && (
+        <ConfirmationModal
+          selectedMainVideo={selectedMainVideo}
+          isOpen={opened}
+          onClose={close}
+          onAccept={deleteNow}
+          title="Are you sure you want to delete this video"
+        />
+      )}
     </div>
   );
 };

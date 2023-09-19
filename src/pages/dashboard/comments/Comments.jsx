@@ -58,7 +58,12 @@ const Comment = () => {
 
       default:
         return (
-          <All currentTab={currentTab} search={search} selected={selected} setSelected={setSelected} />
+          <All
+            currentTab={currentTab}
+            search={search}
+            selected={selected}
+            setSelected={setSelected}
+          />
         );
     }
   }, [currentTab, search, comments, selected]);
@@ -87,6 +92,7 @@ const Comment = () => {
       <div className="absolute flex items-center px-8 py-8 mx-2 right-5 gap-x-2 -top-2 border-6">
         {selected.length > 0 && (
           <div
+            className="flex mr-5 gap-3 items-center"
             onClick={() => {
               for (let i = 0; i < selected.length; i++) {
                 const { commentId } = selected[i];

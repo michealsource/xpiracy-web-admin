@@ -286,7 +286,7 @@ const AdminDashboard = () => {
                       value="randomBehindTheScene"
                       className="bg-black text-[#fff] text-sm"
                     >
-                      Bts
+                      Behind The Scene
                     </option>
                   </select>
                 </div>
@@ -354,7 +354,11 @@ const AdminDashboard = () => {
                       <div key={id} className="space-y-2">
                         <div className="flex items-center gap-x-2">
                           <div>
-                            <img src={user?.photo} alt="" />
+                            <img
+                              src={user?.photo}
+                              alt=""
+                              className="w-[30px] h-[30px] rounded-[50%]"
+                            />
                           </div>
                           <h5 className="text-sm">
                             {user?.first_name} {user?.last_name}

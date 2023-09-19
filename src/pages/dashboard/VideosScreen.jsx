@@ -31,10 +31,11 @@ const Tabs = [
 
 const VideosScreen = () => {
   const [currentTab, setCurrentTab] = useState("video");
-  const {allCollectionData} = useSelector(_ => _.genericSlice)
+  const { allCollectionData } = useSelector((_) => _.genericSlice);
 
   const updateTabData = useMemo(() => {
-    switch (currentTab) {
+    switch (
+      currentTab
       // case "video":
       //   return <MainVideo allCollectionData={allCollectionData} />;
       // case "interview":
@@ -53,6 +54,7 @@ const VideosScreen = () => {
       //   return <MainVideo currentTab={'bts'} allCollectionData={allCollectionData} />;
       // default:
       //   return <MainVideo currentTab={'video'} allCollectionData={allCollectionData} />;
+    ) {
     }
   }, [currentTab]);
 
@@ -73,15 +75,15 @@ const VideosScreen = () => {
                   <h6>{title}</h6>
                 </div>
               ))}
-               
             </div>
-           
           </div>
-          {/* <div className="border-b-[0.1px] border-[#8f8c8c] border z-50"></div> */}
         </div>
-        {/* <div className="px-4 my-8 md:px-12">{updateTabData}</div> */}
+
         <div className="px-4 my-8 md:px-12">
-          <MainVideo currentTab={currentTab} allCollectionData={allCollectionData} />
+          <MainVideo
+            currentTab={currentTab}
+            allCollectionData={allCollectionData}
+          />
         </div>
       </div>
     </>
