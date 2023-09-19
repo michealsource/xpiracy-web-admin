@@ -17,9 +17,9 @@ const useStyles = createStyles((theme) => ({
 const Navbar = () => {
   const { classes } = useStyles();
 
-  const authSelector = useSelector(_ => _.authenticationSlice);
+  const authSelector = useSelector((_) => _.authenticationSlice);
 
-  const adminData = (authSelector?.userData?.admin || {})
+  const adminData = authSelector?.userData?.admin || {};
 
   return (
     <div className="absolute flex items-center py-2 mx-2 md:right-10 gap-x-2">
@@ -29,7 +29,9 @@ const Navbar = () => {
       <div className="bg-[#fff] rounded-full  flex items-center justify-center">
         <img src={manAvatar} alt="" className="w-10 h-10" />
       </div>
-      <p>{adminData?.first_name} {adminData?.last_name}</p>
+      <p>
+        {adminData?.first_name} {adminData?.last_name}
+      </p>
       <div>
         <Menu
           width={200}
@@ -53,10 +55,9 @@ const Navbar = () => {
               <Menu.Item className="text-white">Users</Menu.Item>
             </NavLink>
             <NavLink to="/logout">
-              <Menu.Item onClick={()=>{
-                localStorage.clear();
-                window.location.href = "/sign-in";
-              }} className="text-white">Logout</Menu.Item>
+              <Menu.Item onClick={() => {}} className="text-white">
+                Logout
+              </Menu.Item>
             </NavLink>
           </Menu.Dropdown>
         </Menu>
