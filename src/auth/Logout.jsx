@@ -2,7 +2,7 @@ import CustomButton from "../component/button";
 
 const Logout = () => {
   return (
-    <div className="h-screen  ">
+    <div className="h-screen ">
       <div className="comment-table-container w-[50%]  flex flex-col justify-center items-left my-20 mx-auto">
         <div className="px-8 py-5">
           <h4 className="text-[27px] font-medium ">Logout</h4>
@@ -21,7 +21,7 @@ const Logout = () => {
                   window.history.back();
                 }}
                 width="100%"
-                padding="24.293px 0px 24.707px 0px"
+                padding="14px 0px 14px 0px"
                 borderRadius="45.221px"
                 border="1px solid #fff"
               />
@@ -35,7 +35,7 @@ const Logout = () => {
                 }}
                 color="#F52F00"
                 width="100%"
-                padding="24.293px 0px 24.707px 0px"
+                padding="14px 0px 14px 0px"
                 borderRadius="45.221px"
               />
             </div>

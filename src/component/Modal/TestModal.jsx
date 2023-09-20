@@ -51,7 +51,6 @@ const commentData = [
 ];
 
 const TestModal = ({ isOpen, onClose, activeComment }) => {
-
   const [input, setInput] = useState();
   const [commentInputVisibility, setCommentInputVisibility] = useState(
     new Array(commentData.length).fill(false)
@@ -64,7 +63,7 @@ const TestModal = ({ isOpen, onClose, activeComment }) => {
   };
   return (
     <Modal
-      withCloseButton={false}
+      withCloseButton
       opened={isOpen}
       onClose={onClose}
       title="Comment Thread"
@@ -78,10 +77,18 @@ const TestModal = ({ isOpen, onClose, activeComment }) => {
               <div key={id} className="space-y-2">
                 <div className="flex items-center gap-x-2">
                   <div>
-                    <img src={user?.photo || womanAvatar} alt="" width={70} height={70} />
+                    <img
+                      src={user?.photo || womanAvatar}
+                      alt=""
+                      className="rounded-full h-14 w-14"
+                    />
                   </div>
-                  <h5 className="text-sm">{user?.first_name} {user?.lastname}</h5>
-                  <p className="text-[#F52F00] text-[8px]">{moment(time).calendar()}</p>
+                  <h5 className="text-sm">
+                    {user?.first_name} {user?.lastname}
+                  </h5>
+                  <p className="text-[#F52F00] text-[8px]">
+                    {moment(time).calendar()}
+                  </p>
                 </div>
                 <p className="text-[#939393] text-xs">{comment}</p>
                 <div className="flex items-center justify-between">
@@ -100,15 +107,15 @@ const TestModal = ({ isOpen, onClose, activeComment }) => {
               </div>
             )
           )}
-          
+
           <div className="border px-2 py-1 bg-[#FFFFFF2E] border-[#B4BBC680] rounded-sm">
             <p className="my-1">Type your comment here</p>
             <Input
               placeholder=""
               value={input}
-              onChange={e => setInput(e.target.value)}
+              onChange={(e) => setInput(e.target.value)}
               rightSection={
-                <div className="flex items-center gap-x-2 mr-20">
+                <div className="flex items-center mr-20 gap-x-2">
                   {/* <AiOutlineSmile
                     size="1.2rem"
                     style={{ opacity: 0.5, color: "#eee" }}
@@ -118,11 +125,14 @@ const TestModal = ({ isOpen, onClose, activeComment }) => {
                     color="#F52F00"
                     borderRadius="20px"
                     padding="6px 12px"
-                    onClick={()=>{
-                      replyToACommentFireStore({
-                        commentId: activeComment?.commentId,
-                        replies: activeComment?.replies || []
-                      }, input);
+                    onClick={() => {
+                      replyToACommentFireStore(
+                        {
+                          commentId: activeComment?.commentId,
+                          replies: activeComment?.replies || [],
+                        },
+                        input
+                      );
 
                       setInput("");
                       onClose();
@@ -134,7 +144,6 @@ const TestModal = ({ isOpen, onClose, activeComment }) => {
             />
           </div>
         </div>
-        
       </div>
     </Modal>
   );
