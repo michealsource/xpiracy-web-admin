@@ -48,7 +48,10 @@ const UploadNewVideoModal = ({ isOpen, onClose }) => {
               <img src={uploadIconOrange} alt="" />
               <h6 className="text-xl font-semibold">
                 Drag & drop files or{" "}
-                <button className="underline text-[#F52F00] " onClick={open}>
+                <button
+                  className="underline text-[#F52F00] "
+                  onClick={open}
+                >
                   Browse
                 </button>
               </h6>
